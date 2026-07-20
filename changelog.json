@@ -1,0 +1,38 @@
+{
+  "ru": {
+    "title": "Что нового",
+    "label": "История",
+    "currentBadge": "текущая",
+    "versions": [
+      {
+        "version": "v1.5.0",
+        "date": "01.03.2026",
+        "changes": [
+          "Обновление до последней версии MAX 26.20.2",
+          "Добавлен режим нечиталки",
+          "Добавлен режим призрака",
+          "Перемещено меню разработчика — долгий тап по версии приложения в разделе «О приложении»",
+          "Добавлена подмена параметра mode, который отвечал за блокировку авторизации через неофиц. клиенты"
+        ]
+      }
+    ]
+  },
+  "en": {
+    "title": "What's new",
+    "label": "History",
+    "currentBadge": "current",
+    "versions": [
+      {
+        "version": "v1.5.0",
+        "date": "03/01/2026",
+        "changes": [
+          "Updated to latest MAX 26.20.2",
+          "Added stealth mode",
+          "Added ghost mode",
+          "Moved developer menu — long tap on app version in About",
+          "Added mode parameter spoofing to bypass unofficial client auth blocks"
+        ]
+      }
+    ]
+  }
+}

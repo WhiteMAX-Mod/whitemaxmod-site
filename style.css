@@ -1,0 +1,330 @@
+*{margin:0;padding:0;box-sizing:border-box}html{scroll-behavior:smooth}
+body{
+    font-family:'Inter',system-ui,-apple-system,sans-serif;
+    color:#fff;line-height:1.6;-webkit-font-smoothing:antialiased;
+    min-height:100vh;background:#2a2a2e;text-align:center;
+    overflow-x:hidden;position:relative;
+    font-size:17.6px;
+    scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.15) transparent;
+    transition:background .8s cubic-bezier(.4,0,.2,1),color .8s cubic-bezier(.4,0,.2,1);
+}
+
+/* Заголовки */
+.logo-text,.section-title,.faq-question,.changelog-version,.install-step h4,.page-404 h2,.page-404 .code{
+    font-family:'DM Sans',system-ui,-apple-system,sans-serif;
+}
+
+/* ===== СВЕТЛАЯ ТЕМА ===== */
+body.light{
+    background:#f2f2f5;color:#1a1a1a;
+    scrollbar-color:rgba(0,0,0,.15) transparent;
+}
+body.light .gradient-bg{
+    background:radial-gradient(ellipse at 50% 30%,#d8d8e0 0%,#dddde4 25%,#e2e2e8 50%,#e8e8ec 70%,#eeeef2 85%,#f2f2f5 100%);
+}
+body.light .gradient-bg::after{
+    background:radial-gradient(600px circle at 25% 35%,rgba(0,0,0,.05) 0%,rgba(0,0,0,.025) 30%,rgba(0,0,0,.008) 60%,transparent 100%),
+               radial-gradient(600px circle at 75% 65%,rgba(0,0,0,.035) 0%,rgba(0,0,0,.018) 30%,rgba(0,0,0,.006) 60%,transparent 100%);
+}
+body.light .grid-overlay{
+    background-image:linear-gradient(rgba(0,0,0,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(0,0,0,.05) 1px,transparent 1px);
+    opacity:.25;
+}
+body.light .particle-dot{background:#000}
+body.light .loader-spin{border-color:rgba(0,0,0,.1);border-top-color:#1a1a1a}
+body.light .logo-text{color:#1a1a1a}
+body.light .logo-text span{color:#777}
+body.light .logo-icon-fallback{background:rgba(0,0,0,.05);color:#1a1a1a;border:1px solid rgba(0,0,0,.12)}
+body.light .tagline,.light .description-text,.light .faq-answer,.light .changelog-changes li,.light .install-step p{color:#555}
+body.light .section-label{color:#888}
+body.light .section-title,.light .faq-question,.light .changelog-version,.light .install-step h4{color:#1a1a1a}
+body.light .feature-list li{color:#444}
+body.light .changelog-date{color:#999}
+body.light .changelog-changes li::before{color:#aaa}
+body.light .install-step-icon{background:rgba(0,0,0,.05);color:#1a1a1a}
+body.light .toast{background:#f0f0f3;color:#1a1a1a;box-shadow:0 8px 30px rgba(0,0,0,.15)}
+body.light .btn{background:rgba(0,0,0,.05);color:#555}
+body.light .btn:hover{background:rgba(0,0,0,.1);color:#1a1a1a;box-shadow:0 4px 16px rgba(0,0,0,.08)}
+body.light .btn-primary{background:#1a1a1a;color:#fff;box-shadow:0 4px 26px rgba(0,0,0,.2)}
+body.light .btn-primary:hover{background:#333;box-shadow:0 8px 38px rgba(0,0,0,.3)}
+body.light .btn-support{color:#888}
+body.light .btn-support:hover{color:#555}
+body.light .agreement-text,.light .agreement-text a{color:#999}
+body.light .agreement-text a:hover{color:#555}
+body.light .download-warning{color:#7a6a30}
+body.light .section-icon{background:rgba(0,0,0,.05);color:#888}
+body.light .divider{background:rgba(0,0,0,.08)}
+body.light footer,.light footer a{color:#999}
+body.light footer a:hover{color:#1a1a1a}
+body.light footer .disclaimer{color:#aaa}
+body.light .faq-question::after,.light .feature-list li::before{color:#aaa}
+body.light .scroll-top-btn{background:rgba(0,0,0,.06);color:#666}
+body.light .scroll-top-btn:hover{background:rgba(0,0,0,.12);color:#1a1a1a}
+body.light .theme-toggle{background:rgba(0,0,0,.06);color:#666}
+body.light .theme-toggle:hover{background:rgba(0,0,0,.12);color:#1a1a1a}
+body.light .page-404 h2{color:#1a1a1a}
+body.light .page-404 p{color:#888}
+body.light .lang-toggle{background:rgba(0,0,0,.06);color:#666}
+body.light .lang-toggle:hover{background:rgba(0,0,0,.12);color:#1a1a1a}
+
+/* Плавные переходы */
+.gradient-bg,.gradient-bg::after,.grid-overlay,.particle-dot,
+.logo-text,.logo-text span,.logo-icon-fallback,.tagline,
+.btn,.btn-primary,.btn-support,.agreement-text,.agreement-text a,.download-warning,
+.section-label,.section-title,.section-icon,.description-text,
+.feature-list li,.feature-list li::before,.faq-question,.faq-question::after,
+.faq-answer,.changelog-version,.changelog-date,.changelog-changes li,.changelog-changes li::before,
+.divider,.loader-spin,footer,footer a,footer .disclaimer,
+.scroll-top-btn,.theme-toggle,.lang-toggle,.install-step h4,.install-step p,.install-step-icon,.toast{
+    transition:all .8s cubic-bezier(.4,0,.2,1);
+}
+
+/* Скроллбар */
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:3px;transition:background .3s ease}
+::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,.25)}
+
+/* Фон */
+.gradient-bg,.grid-overlay,#particles-canvas,.particles-css{position:fixed;inset:0;z-index:0;pointer-events:none}
+.gradient-bg{
+    background:radial-gradient(ellipse at 50% 30%,#3a3a40 0%,#333338 25%,#2d2d32 50%,#2a2a2e 70%,#25252a 85%,#222226 100%);
+}
+.gradient-bg::after{
+    content:'';position:absolute;inset:0;
+    background:radial-gradient(600px circle at 25% 35%,rgba(255,255,255,.07) 0%,rgba(255,255,255,.04) 30%,rgba(255,255,255,.01) 60%,transparent 100%),
+               radial-gradient(600px circle at 75% 65%,rgba(255,255,255,.05) 0%,rgba(255,255,255,.03) 30%,rgba(255,255,255,.01) 60%,transparent 100%);
+    animation:floatGlow 10s ease-in-out infinite;
+}
+@keyframes floatGlow{0%,100%{opacity:.4}50%{opacity:1}}
+.grid-overlay{
+    opacity:.2;
+    background-image:linear-gradient(rgba(255,255,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.03) 1px,transparent 1px);
+    background-size:66px 66px;
+}
+
+/* CSS-частицы */
+.particles-css{display:none}
+.particle-dot{position:absolute;border-radius:50%;background:#fff;opacity:0;animation:floatUp var(--dur,8s) var(--delay,0s) infinite ease-in}
+@keyframes floatUp{0%{opacity:0;transform:translateY(0) translateX(0)}10%{opacity:var(--op,.15)}90%{opacity:var(--op,.15)}100%{opacity:0;transform:translateY(-100vh) translateX(var(--drift,20px))}}
+
+/* Тост */
+.toast-container{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);z-index:200;pointer-events:none}
+.toast{
+    background:rgba(255,255,255,.95);color:#1a1a1a;
+    padding:14px 24px;border-radius:50px;
+    font-size:14px;font-weight:500;
+    box-shadow:0 8px 30px rgba(0,0,0,.4);
+    cursor:pointer;pointer-events:auto;
+    opacity:0;transform:translateY(20px);
+    transition:all .35s cubic-bezier(.4,0,.2,1);
+    white-space:nowrap;
+}
+.toast.visible{opacity:1;transform:translateY(0)}
+.toast:hover{background:#fff}
+
+/* Управление */
+.lang-toggle{
+    position:fixed;top:20px;right:74px;z-index:100;
+    height:44px;padding:0 16px;border-radius:50px;
+    background:rgba(255,255,255,.06);color:#999;
+    border:none;cursor:pointer;font-size:13px;font-weight:600;
+    display:flex;align-items:center;gap:6px;
+    backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+}
+.lang-toggle:hover{background:rgba(255,255,255,.12);color:#fff}
+.theme-toggle{
+    position:fixed;top:20px;right:20px;z-index:100;
+    width:44px;height:44px;border-radius:50%;
+    background:rgba(255,255,255,.06);color:#999;
+    border:none;cursor:pointer;font-size:20px;
+    display:flex;align-items:center;justify-content:center;
+    backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+}
+.theme-toggle:hover{background:rgba(255,255,255,.12);color:#fff}
+.scroll-top-btn{
+    position:fixed;bottom:30px;right:30px;z-index:100;
+    width:44px;height:44px;border-radius:50%;
+    background:rgba(255,255,255,.06);color:#999;
+    border:none;cursor:pointer;font-size:20px;
+    display:flex;align-items:center;justify-content:center;
+    backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+    opacity:0;transform:translateY(20px);pointer-events:none;
+    transition:all .3s ease,opacity .3s ease,transform .3s ease;
+}
+.scroll-top-btn.visible{opacity:1;transform:translateY(0);pointer-events:auto}
+.scroll-top-btn:hover{background:rgba(255,255,255,.12);color:#fff}
+
+/* Контейнер */
+.container{position:relative;z-index:1;max-width:770px;margin:0 auto;padding:0 28px}
+header{padding:110px 0 62px}
+.logo{display:flex;flex-direction:column;align-items:center;gap:28px;margin-bottom:24px}
+.logo-icon-wrapper{position:relative;width:110px;height:110px;margin:0 auto;filter:drop-shadow(0 16px 40px rgba(255,255,255,.12))}
+body.light .logo-icon-wrapper{filter:drop-shadow(0 16px 40px rgba(0,0,0,.08))}
+.logo-icon-fallback,.logo-icon{position:absolute;inset:0;width:110px;height:110px;border-radius:28px}
+.logo-icon-fallback{background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;font-size:52px;font-weight:700;color:#fff;z-index:0;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.logo-icon{z-index:1;object-fit:contain}
+.logo-text{font-size:52px;font-weight:800;letter-spacing:-1.5px;color:#fff}
+.logo-text span{color:#666;font-weight:700}
+.tagline{color:#aaa;font-size:18.7px;margin:0 auto;max-width:440px}
+
+/* Кнопки */
+.actions{display:flex;flex-direction:column;align-items:center;gap:18px;margin-top:40px}
+.actions-row{display:flex;flex-wrap:wrap;gap:11px;justify-content:center}
+.download-wrapper{display:flex;flex-direction:column;align-items:center;width:100%}
+.download-count{font-size:13px;color:#888;margin-top:6px;display:flex;align-items:center;gap:6px;justify-content:center}
+.download-count span{color:#aaa;font-weight:600}
+.btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:9px;
+    padding:15.4px 31px;border-radius:50px;font-size:16.5px;font-weight:600;
+    text-decoration:none;transition:all .8s cubic-bezier(.4,0,.2,1);cursor:pointer;border:none;font-family:inherit;
+    background:rgba(255,255,255,.04);color:#ccc;
+    backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+}
+.btn:hover{background:rgba(255,255,255,.1);color:#fff;transform:translateY(-2px);box-shadow:0 4px 16px rgba(255,255,255,.06)}
+.btn-primary{background:#fff;color:#1a1a1a;box-shadow:0 4px 26px rgba(255,255,255,.2);padding:17.6px 44px;font-size:17.6px;white-space:nowrap}
+.btn-primary:hover{background:#f0f0f0;color:#1a1a1a;box-shadow:0 8px 38px rgba(255,255,255,.35);transform:translateY(-3px)}
+.btn-support{color:#888;font-size:14.3px;padding:11px 24px}
+.btn-support:hover{color:#aaa;transform:translateY(-1px)}
+.agreement-text{color:#666;font-size:12.1px;margin-top:8px;line-height:1.4;max-width:340px;text-wrap:balance}
+.agreement-text a{color:#888;text-decoration:none}
+.agreement-text a:hover{color:#bbb}
+.download-warning{
+    color:#b0a080;font-size:14.3px;line-height:1.6;text-align:center;max-width:440px;
+    max-height:0;overflow:hidden;opacity:0;margin-top:0;
+    transition:all .5s cubic-bezier(.4,0,.2,1);
+}
+.download-warning.visible{max-height:200px;opacity:1;margin-top:14px}
+
+/* Секции */
+section{margin-bottom:80px}
+.section-label{font-size:12.1px;font-weight:600;text-transform:uppercase;letter-spacing:3px;color:#555;margin-bottom:18px}
+.section-title{font-size:31px;font-weight:700;margin-bottom:31px;color:#fff;letter-spacing:-.5px}
+.section-icon{display:inline-block;width:44px;height:44px;margin-bottom:18px;background:rgba(255,255,255,.06);border-radius:13px;line-height:44px;font-size:20px;font-weight:300;color:#999}
+.description-text{color:#aaa;font-size:17.6px;margin:0 auto 31px;line-height:1.8;max-width:530px}
+.feature-list{list-style:none;display:grid;gap:0;max-width:485px;margin:0 auto;text-align:left}
+.feature-list li{display:flex;align-items:flex-start;gap:16px;font-size:16.5px;color:#ccc;padding:15.4px 0}
+.feature-list li::before{content:"→";display:flex;align-items:center;justify-content:center;min-width:22px;height:22px;color:#555;font-weight:300;font-size:15.4px;flex-shrink:0;margin-top:1px}
+.faq-list,.changelog-list{display:grid;gap:0;max-width:530px;margin:0 auto;text-align:left}
+.changelog-list{gap:31px}.faq-item{padding:22px 0}
+
+/* Инструкция */
+.install-steps{display:grid;gap:28px;max-width:530px;margin:0 auto;text-align:left}
+.install-step{display:flex;gap:18px;align-items:flex-start}
+.install-step-icon{
+    width:48px;height:48px;border-radius:14px;
+    background:rgba(255,255,255,.06);color:#fff;
+    display:flex;align-items:center;justify-content:center;
+    font-size:22px;flex-shrink:0;
+}
+.install-step h4{font-size:18px;font-weight:600;color:#fff;margin-bottom:4px}
+.install-step p{font-size:15px;color:#aaa;line-height:1.6}
+
+/* FAQ */
+.faq-answer{color:#aaa;font-size:16.5px;margin-top:0;line-height:1.8;max-height:0;overflow:hidden;opacity:0;transition:all .4s cubic-bezier(.4,0,.2,1)}
+.faq-item.open .faq-answer{max-height:500px;opacity:1;margin-top:13px}
+.faq-question{font-weight:600;font-size:18.7px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;user-select:none;gap:18px;color:#fff}
+.faq-question:hover{color:#ccc}
+.faq-question::after{content:"+";font-size:22px;color:#555;flex-shrink:0;transition:all .35s ease;font-weight:300}
+.faq-item.open .faq-question::after{content:"−";transform:rotate(180deg);color:#fff}
+
+/* Чейнджлог */
+.changelog-header{margin-bottom:11px;display:flex;align-items:baseline;gap:13px}
+.changelog-version{font-weight:700;font-size:18.7px;color:#fff}
+.current-badge{display:inline-block;background:rgba(255,255,255,.1);color:#aaa;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:500;letter-spacing:.5px}
+body.light .current-badge{background:rgba(0,0,0,.06);color:#888}
+.changelog-date{font-size:14.3px;color:#555}
+.changelog-changes{list-style:none;display:grid;gap:9px}
+.changelog-changes li{font-size:16.5px;color:#aaa;padding-left:18px;position:relative;line-height:1.7}
+.changelog-changes li::before{content:"—";position:absolute;left:0;color:#444}
+.divider{width:44px;height:2px;background:rgba(255,255,255,.06);border-radius:1px;margin:0 auto 62px}
+.loader{padding:53px;color:#aaa}
+.loader-spin{display:inline-block;width:26px;height:26px;border:2px solid rgba(255,255,255,.1);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* 404 */
+.page-404{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:80vh;text-align:center;padding:40px 20px}
+.page-404 .code{font-size:120px;font-weight:800;letter-spacing:-4px;color:rgba(255,255,255,.1);line-height:1}
+body.light .page-404 .code{color:rgba(0,0,0,.08)}
+.page-404 h2{font-size:28px;margin:16px 0 8px;color:#fff}
+.page-404 p{color:#888;margin-bottom:24px}
+
+/* Подвал */
+footer{padding:80px 0 48px;color:#555;font-size:14.3px;line-height:2}
+footer a{color:#777;text-decoration:none;font-weight:500}
+footer a:hover{color:#fff}
+footer .disclaimer{color:#444;font-size:13.2px}
+
+/* ===== АДАПТИВ ===== */
+@media(max-width:600px){
+    body{font-size:16px}
+    .container{max-width:100%;padding:0 20px}
+    header{padding:72px 0 44px}
+    .logo{gap:18px;margin-bottom:18px}
+    .logo-icon,.logo-icon-fallback,.logo-icon-wrapper{width:72px;height:72px;border-radius:22px}
+    .logo-icon-fallback{font-size:34px}
+    .logo-text{font-size:34px}
+    .tagline{font-size:15px;max-width:300px}
+    .actions{margin-top:32px;gap:14px}
+    .actions-row{gap:8px}
+    .btn{padding:13px 24px;font-size:15px}
+    .btn-primary{padding:16px 36px;font-size:17px}
+    .btn-support{font-size:13px;padding:10px 20px}
+    .agreement-text{max-width:280px;font-size:11px;margin-top:6px}
+    .download-warning{max-width:300px;font-size:12px;line-height:1.5}
+    .download-warning.visible{max-height:200px}
+    section{margin-bottom:56px}
+    .section-title{font-size:26px;margin-bottom:24px}
+    .section-label{margin-bottom:14px}
+    .section-icon{width:38px;height:38px;margin-bottom:14px;font-size:18px;line-height:38px}
+    .description-text{font-size:15px;max-width:100%;margin-bottom:24px}
+    .feature-list,.faq-list,.changelog-list{max-width:100%}
+    .feature-list li{font-size:14px;padding:12px 0;gap:12px}
+    .feature-list li::before{min-width:20px;height:20px;font-size:13px}
+    .faq-item{padding:18px 0}
+    .faq-question{font-size:16px;gap:12px}
+    .faq-question::after{font-size:20px}
+    .faq-answer{font-size:14px}
+    .faq-item.open .faq-answer{margin-top:10px}
+    .changelog-list{gap:24px}
+    .changelog-version{font-size:16px}
+    .changelog-date{font-size:12px}
+    .changelog-changes li{font-size:14px}
+    .install-steps{gap:20px}
+    .install-step h4{font-size:16px}
+    .install-step p{font-size:13px}
+    .install-step-icon{width:40px;height:40px;font-size:18px}
+    .divider{margin-bottom:48px}
+    footer{padding:56px 0 36px;font-size:13px}
+    footer .disclaimer{font-size:11px}
+    .lang-toggle{top:14px;right:60px;height:38px;font-size:11px;padding:0 12px}
+    .theme-toggle{top:14px;right:14px;width:38px;height:38px;font-size:18px}
+    .scroll-top-btn{bottom:20px;right:20px;width:38px;height:38px;font-size:18px}
+    .page-404 .code{font-size:80px}
+    .toast{font-size:13px;padding:12px 20px}
+    .toast-container{bottom:20px}
+}
+@media(max-width:380px){
+    header{padding:60px 0 36px}
+    .logo-icon,.logo-icon-fallback,.logo-icon-wrapper{width:64px;height:64px;border-radius:18px}
+    .logo-icon-fallback{font-size:30px}
+    .logo-text{font-size:30px}
+    .tagline{font-size:14px;max-width:260px}
+    .btn{padding:11px 20px;font-size:14px}
+    .btn-primary{padding:14px 30px;font-size:16px}
+    .actions-row{gap:6px}
+    .agreement-text{max-width:240px;font-size:10px}
+    .download-warning{max-width:260px;font-size:11px}
+    .section-title{font-size:24px}
+    section{margin-bottom:44px}
+    .faq-question{font-size:15px}
+}
+@media(hover:none) and (pointer:coarse){
+    .btn{min-height:48px;padding-left:28px;padding-right:28px}
+    .btn-primary{min-height:52px;padding-left:36px;padding-right:36px}
+    .faq-question{min-height:48px}
+    footer a{padding:4px 0;display:inline-block}
+    .gradient-bg::before{display:none!important}
+    #particles-canvas{display:none}
+    .particles-css{display:block}
+}

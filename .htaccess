@@ -1,0 +1,5 @@
+ErrorDocument 404 /index.html
+Options -Indexes
+<Files script.js>
+    Require all granted
+</Files>

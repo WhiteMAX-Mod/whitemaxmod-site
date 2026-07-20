@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhiteMAX — мод на MAX</title>
+    <link rel="icon" type="image/png" href="images/favicon.png">
+    <link rel="apple-touch-icon" href="images/favicon.png">
+
+    <meta property="og:title" content="WhiteMAX — мод на MAX">
+    <meta property="og:description" content="Сокращение сбора аналитики в MAX. Больше приватности, меньше слежки.">
+    <meta property="og:image" content="images/og-image.png">
+    <meta property="og:url" content="https://whitemax.app">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="WhiteMAX — мод на MAX">
+    <meta name="twitter:description" content="Сокращение сбора аналитики в MAX. Больше приватности.">
+    <meta name="twitter:image" content="images/og-image.png">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <button class="lang-toggle" id="lang-toggle" aria-label="Сменить язык">EN</button>
+    <button class="theme-toggle" id="theme-toggle" aria-label="Переключить тему" title="Сменить тему">◐</button>
+    <button class="scroll-top-btn" id="scroll-top-btn" aria-label="Наверх" title="Наверх">↑</button>
+
+    <div class="toast-container">
+        <div class="toast" id="toast">↓ Инструкция по установке</div>
+    </div>
+
+    <div class="gradient-bg" id="gradient-bg"></div>
+    <div class="grid-overlay"></div>
+    <canvas id="particles-canvas"></canvas>
+    <div class="particles-css" id="particles-css" aria-hidden="true"></div>
+
+    <div class="container" id="main-content">
+
+        <header>
+            <div class="logo">
+                <div class="logo-icon-wrapper">
+                    <div class="logo-icon-fallback">W</div>
+                    <img src="images/icon.png" alt="WhiteMAX" class="logo-icon" onerror="this.style.display='none'">
+                </div>
+                <h1 class="logo-text">White<span>MAX</span></h1>
+            </div>
+            <p class="tagline" data-ru="Сокращает сбор аналитики в MAX.<br>Больше приватности, меньше слежки." data-en="Reduces analytics collection in MAX.<br>More privacy, less tracking.">Сокращает сбор аналитики в MAX.<br>Больше приватности, меньше слежки.</p>
+            <div class="actions">
+                <div class="download-wrapper">
+                    <a id="download-btn" href="https://github.com/WhiteMAX-Mod/whitemaxmod/releases/latest/download/whitemax.apk" class="btn btn-primary" download data-ru="Скачать WhiteMAX" data-en="Download WhiteMAX">Скачать WhiteMAX</a>
+                    <div class="download-count">
+                        <span>↓</span> <span id="download-count-value">...</span> <span data-ru="скачиваний" data-en="downloads">скачиваний</span>
+                    </div>
+                    <p class="agreement-text">
+                        <span data-ru="Скачивая, вы соглашаетесь с" data-en="By downloading, you agree to the">Скачивая, вы соглашаетесь с</span> <a href="https://telegra.ph/terms-of-service-whitemax-03-01" target="_blank" rel="noopener" data-ru="пользовательским соглашением" data-en="terms of service">пользовательским соглашением</a>
+                    </p>
+                    <div class="download-warning" id="download-warning">
+                        <span data-ru="Продолжая установку, вы принимаете на себя все риски." data-en="By continuing the installation, you accept all risks.">Продолжая установку, вы принимаете на себя все риски.</span><br><span data-ru="В редких случаях модификация может привести к блокировке аккаунта." data-en="In rare cases, modification may lead to account suspension.">В редких случаях модификация может привести к блокировке аккаунта.</span>
+                    </div>
+                </div>
+                <div class="actions-row">
+                    <a href="https://t.me/whitemaxmod" class="btn" target="_blank" rel="noopener">Telegram</a>
+                    <a href="https://github.com/WhiteMAX-Mod/whitemaxmod" class="btn" target="_blank" rel="noopener">GitHub</a>
+                    <a href="https://www.tiktok.com/@whitemaxmod" class="btn" target="_blank" rel="noopener">TikTok</a>
+                </div>
+                <a href="https://www.donationalerts.com/r/9ka" class="btn btn-support" target="_blank" rel="noopener" data-ru="Поддержать разработку" data-en="Support development">Поддержать разработку</a>
+            </div>
+        </header>
+
+        <section id="about-section">
+            <p class="section-label" data-ru="О проекте" data-en="About">О проекте</p>
+            <div class="section-icon">◈</div>
+            <h2 class="section-title" data-ru="Что такое WhiteMAX?" data-en="What is WhiteMAX?">Что такое WhiteMAX?</h2>
+            <div id="about-content"></div>
+        </section>
+
+        <div class="divider"></div>
+
+        <section id="install-section">
+            <p class="section-label" data-ru="Установка" data-en="Installation">Установка</p>
+            <div class="section-icon">↓</div>
+            <h2 class="section-title" data-ru="Как установить WhiteMAX?" data-en="How to install WhiteMAX?">Как установить WhiteMAX?</h2>
+            <div class="install-steps">
+                <div class="install-step">
+                    <div class="install-step-icon">1</div>
+                    <div>
+                        <h4 data-ru="Скачайте APK-файл" data-en="Download the APK">Скачайте APK-файл</h4>
+                        <p data-ru="Нажмите кнопку «Скачать» выше и дождитесь загрузки файла на устройство." data-en="Tap the «Download» button above and wait for the file to finish downloading.">Нажмите кнопку «Скачать» выше и дождитесь загрузки файла на устройство.</p>
+                    </div>
+                </div>
+                <div class="install-step">
+                    <div class="install-step-icon">2</div>
+                    <div>
+                        <h4 data-ru="Разрешите установку" data-en="Allow installation">Разрешите установку</h4>
+                        <p data-ru="В настройках безопасности разрешите установку приложений из неизвестных источников." data-en="In your security settings, allow installation from unknown sources.">В настройках безопасности разрешите установку приложений из неизвестных источников.</p>
+                    </div>
+                </div>
+                <div class="install-step">
+                    <div class="install-step-icon">3</div>
+                    <div>
+                        <h4 data-ru="Установите WhiteMAX" data-en="Install WhiteMAX">Установите WhiteMAX</h4>
+                        <p data-ru="Откройте скачанный APK-файл и следуйте инструкциям на экране. Приватность ваша." data-en="Open the downloaded APK file and follow the on-screen instructions. Privacy is yours.">Откройте скачанный APK-файл и следуйте инструкциям на экране. Приватность ваша.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="divider"></div>
+
+        <section id="faq-section">
+            <p class="section-label" data-ru="Поддержка" data-en="Support">Поддержка</p>
+            <div class="section-icon">?</div>
+            <h2 class="section-title" data-ru="Часто задаваемые вопросы" data-en="Frequently Asked Questions">Часто задаваемые вопросы</h2>
+            <div id="faq-content"></div>
+        </section>
+
+        <div class="divider"></div>
+
+        <section id="changelog-section">
+            <p class="section-label" id="changelog-label">История</p>
+            <div class="section-icon">↗</div>
+            <h2 class="section-title" id="changelog-title">Что нового</h2>
+            <div id="changelog-content" class="loader"><div class="loader-spin"></div></div>
+        </section>
+
+        <footer>
+            <p>
+                WhiteMAX Mod &copy; 2026 &nbsp;&middot;&nbsp;
+                <a href="https://telegra.ph/terms-of-service-whitemax-03-01" target="_blank" rel="noopener" data-ru="Условия использования" data-en="Terms of Service">Условия использования</a>
+                &nbsp;&middot;&nbsp;
+                <span data-ru="По вопросам юридических претензий: legal@whitemaxmod.com" data-en="For legal claims: legal@whitemaxmod.com">По вопросам юридических претензий: legal@whitemaxmod.com</span>
+            </p>
+            <p class="disclaimer" data-ru="Не связан с правообладателем MAX или VK" data-en="Not affiliated with MAX or VK">Не связан с правообладателем MAX или VK</p>
+        </footer>
+
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
