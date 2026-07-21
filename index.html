@@ -6,15 +6,16 @@
     <title>WhiteMAX — мод на MAX</title>
     <link rel="icon" type="image/png" href="images/favicon.png">
     <link rel="apple-touch-icon" href="images/favicon.png">
+    <meta name="description" content="WhiteMAX — модифицированная версия мессенджера MAX. Сокращает сбор аналитики. Больше приватности, меньше слежки.">
 
     <meta property="og:title" content="WhiteMAX — мод на MAX">
-    <meta property="og:description" content="Сокращение сбора аналитики в MAX. Больше приватности, меньше слежки.">
+    <meta property="og:description" content="Сокращает сбор аналитики в MAX. Больше приватности, меньше слежки.">
     <meta property="og:image" content="images/og-image.png">
-    <meta property="og:url" content="https://whitemax.app">
+    <meta property="og:url" content="https://whitemaxmod.com">
     <meta property="og:type" content="website">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="WhiteMAX — мод на MAX">
-    <meta name="twitter:description" content="Сокращение сбора аналитики в MAX. Больше приватности.">
+    <meta name="twitter:description" content="Сокращает сбор аналитики в MAX. Больше приватности, меньше слежки.">
     <meta name="twitter:image" content="images/og-image.png">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -24,8 +25,41 @@
 </head>
 <body>
 
-    <button class="lang-toggle" id="lang-toggle" aria-label="Сменить язык">EN</button>
-    <button class="theme-toggle" id="theme-toggle" aria-label="Переключить тему" title="Сменить тему">◐</button>
+    <!-- Верхняя панель: Связь слева | EN + Тема справа -->
+    <button class="contact-toggle" id="contact-toggle">Связь</button>
+    <div class="top-bar">
+        <button class="lang-toggle" id="lang-toggle" aria-label="Сменить язык">EN</button>
+        <button class="theme-toggle" id="theme-toggle" aria-label="Переключить тему" title="Сменить тему">◐</button>
+    </div>
+
+    <!-- Панель контактов -->
+    <div class="contact-panel" id="contact-panel">
+        <div class="contact-item">
+            <div class="contact-label">Основная почта</div>
+            <span class="contact-value">main@whitemaxmod.com</span>
+        </div>
+        <div class="contact-item">
+            <div class="contact-label">Юристам</div>
+            <span class="contact-value">legal@whitemaxmod.com</span>
+        </div>
+        <div class="contact-item">
+            <div class="contact-label">СМИ</div>
+            <span class="contact-value">media@whitemaxmod.com</span>
+        </div>
+        <div class="contact-item">
+            <div class="contact-label">Партнёрам</div>
+            <span class="contact-value">partner@whitemaxmod.com</span>
+        </div>
+        <div class="contact-item">
+            <div class="contact-label">Тех. поддержка</div>
+            <span class="contact-value">support@whitemaxmod.com</span>
+        </div>
+        <div class="contact-item">
+            <div class="contact-label">Сообществу</div>
+            <span class="contact-value">community@whitemaxmod.com</span>
+        </div>
+    </div>
+
     <button class="scroll-top-btn" id="scroll-top-btn" aria-label="Наверх" title="Наверх">↑</button>
 
     <div class="toast-container">
@@ -131,7 +165,7 @@
                 WhiteMAX Mod &copy; 2026 &nbsp;&middot;&nbsp;
                 <a href="https://telegra.ph/terms-of-service-whitemax-03-01" target="_blank" rel="noopener" data-ru="Условия использования" data-en="Terms of Service">Условия использования</a>
                 &nbsp;&middot;&nbsp;
-                <span data-ru="По вопросам юридических претензий: legal@whitemaxmod.com" data-en="For legal claims: legal@whitemaxmod.com">По вопросам юридических претензий: legal@whitemaxmod.com</span>
+                <span data-ru="main@whitemaxmod.com" data-en="main@whitemaxmod.com">main@whitemaxmod.com</span>
             </p>
             <p class="disclaimer" data-ru="Не связан с правообладателем MAX или VK" data-en="Not affiliated with MAX or VK">Не связан с правообладателем MAX или VK</p>
         </footer>

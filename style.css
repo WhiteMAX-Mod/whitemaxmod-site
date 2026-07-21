@@ -60,12 +60,24 @@ body.light footer .disclaimer{color:#aaa}
 body.light .faq-question::after,.light .feature-list li::before{color:#aaa}
 body.light .scroll-top-btn{background:rgba(0,0,0,.06);color:#666}
 body.light .scroll-top-btn:hover{background:rgba(0,0,0,.12);color:#1a1a1a}
-body.light .theme-toggle{background:rgba(0,0,0,.06);color:#666}
-body.light .theme-toggle:hover{background:rgba(0,0,0,.12);color:#1a1a1a}
 body.light .page-404 h2{color:#1a1a1a}
 body.light .page-404 p{color:#888}
-body.light .lang-toggle{background:rgba(0,0,0,.06);color:#666}
-body.light .lang-toggle:hover{background:rgba(0,0,0,.12);color:#1a1a1a}
+
+/* Светлая тема — верхняя панель */
+body.light .top-bar .lang-toggle{background:rgba(0,0,0,.06);color:#666}
+body.light .top-bar .lang-toggle:hover{background:rgba(0,0,0,.12);color:#1a1a1a}
+body.light .top-bar .theme-toggle{background:rgba(0,0,0,.06);color:#666}
+body.light .top-bar .theme-toggle:hover{background:rgba(0,0,0,.12);color:#1a1a1a}
+body.light .contact-panel{background:rgba(240,240,243,.95);border:1px solid rgba(0,0,0,.08)}
+body.light .contact-label{color:#888}
+body.light .contact-value{color:#555}
+body.light .contact-value:hover{color:#1a1a1a;background:rgba(0,0,0,.05)}
+body.light .contact-toggle{
+    background:rgba(0,0,0,.06);color:#666;
+}
+body.light .contact-toggle:hover{
+    background:rgba(0,0,0,.12);color:#1a1a1a;
+}
 
 /* Плавные переходы */
 .gradient-bg,.gradient-bg::after,.grid-overlay,.particle-dot,
@@ -75,14 +87,16 @@ body.light .lang-toggle:hover{background:rgba(0,0,0,.12);color:#1a1a1a}
 .feature-list li,.feature-list li::before,.faq-question,.faq-question::after,
 .faq-answer,.changelog-version,.changelog-date,.changelog-changes li,.changelog-changes li::before,
 .divider,.loader-spin,footer,footer a,footer .disclaimer,
-.scroll-top-btn,.theme-toggle,.lang-toggle,.install-step h4,.install-step p,.install-step-icon,.toast{
-    transition:all .8s cubic-bezier(.4,0,.2,1);
+.scroll-top-btn,.contact-toggle,.top-bar .lang-toggle,.top-bar .theme-toggle,
+.install-step h4,.install-step p,.install-step-icon,.toast,
+.contact-panel,.contact-label,.contact-value{
+    transition:color .8s cubic-bezier(.4,0,.2,1),background .8s cubic-bezier(.4,0,.2,1),border-color .8s cubic-bezier(.4,0,.2,1),box-shadow .8s cubic-bezier(.4,0,.2,1);
 }
 
 /* Скроллбар */
 ::-webkit-scrollbar{width:6px}
 ::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:3px;transition:background .3s ease}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:3px}
 ::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,.25)}
 
 /* Фон */
@@ -97,6 +111,8 @@ body.light .lang-toggle:hover{background:rgba(0,0,0,.12);color:#1a1a1a}
     animation:floatGlow 10s ease-in-out infinite;
 }
 @keyframes floatGlow{0%,100%{opacity:.4}50%{opacity:1}}
+.gradient-bg::before{content:'';position:absolute;inset:0;pointer-events:none;background:radial-gradient(600px circle at var(--mx,50%) var(--my,50%),rgba(255,255,255,calc(.12*var(--go,1))) 0%,rgba(255,255,255,calc(.08*var(--go,1))) 20%,rgba(255,255,255,calc(.04*var(--go,1))) 40%,rgba(255,255,255,calc(.015*var(--go,1))) 60%,rgba(255,255,255,calc(.004*var(--go,1))) 80%,transparent 100%)}
+body.light .gradient-bg::before{background:radial-gradient(600px circle at var(--mx,50%) var(--my,50%),rgba(0,0,0,calc(.10*var(--go,1))) 0%,rgba(0,0,0,calc(.06*var(--go,1))) 20%,rgba(0,0,0,calc(.03*var(--go,1))) 40%,rgba(0,0,0,calc(.012*var(--go,1))) 60%,rgba(0,0,0,calc(.004*var(--go,1))) 80%,transparent 100%)}
 .grid-overlay{
     opacity:.2;
     background-image:linear-gradient(rgba(255,255,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.03) 1px,transparent 1px);
@@ -123,18 +139,32 @@ body.light .lang-toggle:hover{background:rgba(0,0,0,.12);color:#1a1a1a}
 .toast.visible{opacity:1;transform:translateY(0)}
 .toast:hover{background:#fff}
 
-/* Управление */
-.lang-toggle{
-    position:fixed;top:20px;right:74px;z-index:100;
+/* Верхняя панель */
+.top-bar{
+    position:fixed;top:20px;right:20px;z-index:100;
+    display:flex;align-items:center;gap:8px;
+}
+/* Кнопка "Связь" — слева */
+.contact-toggle{
+    position:fixed;top:20px;left:20px;z-index:100;
     height:44px;padding:0 16px;border-radius:50px;
     background:rgba(255,255,255,.06);color:#999;
     border:none;cursor:pointer;font-size:13px;font-weight:600;
     display:flex;align-items:center;gap:6px;
+    font-family:'Inter',system-ui,-apple-system,sans-serif;
+    backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+}
+.contact-toggle:hover{background:rgba(255,255,255,.12);color:#fff}
+.lang-toggle{
+    height:44px;padding:0 16px;border-radius:50px;
+    background:rgba(255,255,255,.06);color:#999;
+    border:none;cursor:pointer;font-size:13px;font-weight:600;
+    display:flex;align-items:center;gap:6px;
+    font-family:'Inter',system-ui,-apple-system,sans-serif;
     backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
 }
 .lang-toggle:hover{background:rgba(255,255,255,.12);color:#fff}
 .theme-toggle{
-    position:fixed;top:20px;right:20px;z-index:100;
     width:44px;height:44px;border-radius:50%;
     background:rgba(255,255,255,.06);color:#999;
     border:none;cursor:pointer;font-size:20px;
@@ -142,6 +172,32 @@ body.light .lang-toggle:hover{background:rgba(0,0,0,.12);color:#1a1a1a}
     backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
 }
 .theme-toggle:hover{background:rgba(255,255,255,.12);color:#fff}
+
+/* Панель контактов — слева */
+.contact-panel{
+    position:fixed;top:72px;left:20px;z-index:99;
+    background:rgba(40,40,46,.95);
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:16px;padding:20px 24px;
+    display:grid;grid-template-columns:1fr 1fr 1fr;
+    gap:16px 24px;
+    opacity:0;transform:translateY(-10px);
+    pointer-events:none;
+    transition:all .3s cubic-bezier(.4,0,.2,1);
+    backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+    box-shadow:0 12px 40px rgba(0,0,0,.3);
+}
+.contact-panel.visible{opacity:1;transform:translateY(0);pointer-events:auto}
+.contact-item{text-align:left;white-space:nowrap}
+.contact-label{font-size:11px;font-weight:600;color:#888;margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px}
+.contact-value{
+    font-size:13px;color:#ccc;text-decoration:none;
+    display:inline-block;padding:2px 6px;margin:-2px -6px;border-radius:6px;
+    cursor:pointer;transition:all .2s ease;
+}
+.contact-value:hover{color:#fff;background:rgba(255,255,255,.06)}
+
+/* Кнопка наверх */
 .scroll-top-btn{
     position:fixed;bottom:30px;right:30px;z-index:100;
     width:44px;height:44px;border-radius:50%;
@@ -177,7 +233,7 @@ body.light .logo-icon-wrapper{filter:drop-shadow(0 16px 40px rgba(0,0,0,.08))}
 .btn{
     display:inline-flex;align-items:center;justify-content:center;gap:9px;
     padding:15.4px 31px;border-radius:50px;font-size:16.5px;font-weight:600;
-    text-decoration:none;transition:all .8s cubic-bezier(.4,0,.2,1);cursor:pointer;border:none;font-family:inherit;
+    text-decoration:none;transition:color .8s cubic-bezier(.4,0,.2,1),background .8s cubic-bezier(.4,0,.2,1),box-shadow .8s cubic-bezier(.4,0,.2,1),transform .8s cubic-bezier(.4,0,.2,1);cursor:pointer;border:none;font-family:inherit;
     background:rgba(255,255,255,.04);color:#ccc;
     backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
 }
@@ -297,12 +353,16 @@ footer .disclaimer{color:#444;font-size:13.2px}
     .divider{margin-bottom:48px}
     footer{padding:56px 0 36px;font-size:13px}
     footer .disclaimer{font-size:11px}
-    .lang-toggle{top:14px;right:60px;height:38px;font-size:11px;padding:0 12px}
-    .theme-toggle{top:14px;right:14px;width:38px;height:38px;font-size:18px}
+    .top-bar{top:14px;right:14px;gap:6px}
+    .contact-toggle{height:38px;padding:0 12px;font-size:12px}
+    .lang-toggle{height:38px;padding:0 12px;font-size:11px}
+    .theme-toggle{width:38px;height:38px;font-size:18px}
     .scroll-top-btn{bottom:20px;right:20px;width:38px;height:38px;font-size:18px}
     .page-404 .code{font-size:80px}
     .toast{font-size:13px;padding:12px 20px}
     .toast-container{bottom:20px}
+    .contact-panel{top:58px;right:8px;left:8px;grid-template-columns:1fr 1fr;gap:12px 16px;padding:16px;border-radius:14px}
+    .contact-value{font-size:12px}
 }
 @media(max-width:380px){
     header{padding:60px 0 36px}
@@ -318,6 +378,9 @@ footer .disclaimer{color:#444;font-size:13.2px}
     .section-title{font-size:24px}
     section{margin-bottom:44px}
     .faq-question{font-size:15px}
+    .contact-panel{grid-template-columns:1fr 1fr;gap:8px 12px;padding:12px}
+    .contact-label{font-size:10px}
+    .contact-value{font-size:11px}
 }
 @media(hover:none) and (pointer:coarse){
     .btn{min-height:48px;padding-left:28px;padding-right:28px}

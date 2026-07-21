@@ -31,7 +31,8 @@ const UI = {
 // ===== УТИЛИТЫ =====
 const GITHUB_REPO = 'WhiteMAX-Mod/whitemaxmod';
 const $ = id => document.getElementById(id);
-const esc = s => { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; };
+const _escEl = document.createElement('div');
+const esc = s => { _escEl.textContent = s; return _escEl.innerHTML; };
 const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 let currentLang = localStorage.getItem('whitemax-lang') || 'ru';
 const t = key => UI[currentLang][key];
@@ -57,7 +58,7 @@ function applyLanguage() {
 }
 
 // ===== 404 =====
-if (window.location.pathname !== '/' && window.location.pathname !== '/index.html' && !window.location.pathname.startsWith('/?')) {
+if (window.location.pathname !== '/' && window.location.pathname !== '/index.html') {
     $('main-content').innerHTML = `
         <div class="page-404">
             <div class="code">404</div>
@@ -80,6 +81,27 @@ $('lang-toggle').addEventListener('click', () => {
     currentLang = currentLang === 'ru' ? 'en' : 'ru';
     localStorage.setItem('whitemax-lang', currentLang);
     applyLanguage();
+});
+
+// ===== ПАНЕЛЬ СВЯЗИ =====
+const contactToggle = $('contact-toggle');
+const contactPanel = $('contact-panel');
+
+contactToggle.addEventListener('click', (e) => {
+    e.stopPropagation();
+    contactPanel.classList.toggle('visible');
+});
+document.addEventListener('click', (e) => {
+    if (!contactPanel.contains(e.target) && e.target !== contactToggle && !contactToggle.contains(e.target)) {
+        contactPanel.classList.remove('visible');
+    }
+});
+document.querySelectorAll('.contact-value').forEach(el => {
+    el.addEventListener('click', () => {
+        navigator.clipboard.writeText(el.textContent).catch(() => {});
+        el.style.opacity = '0.5';
+        setTimeout(() => { el.style.opacity = ''; }, 200);
+    });
 });
 
 // ===== КНОПКА НАВЕРХ =====
@@ -113,12 +135,19 @@ toast.addEventListener('click', () => {
 
 // ===== GITHUB API: СЧЁТЧИК СКАЧИВАНИЙ =====
 (async function () {
+    const CACHE_KEY = 'whitemax-dl-cache', CACHE_TTL = 3600000;
     try {
+        const cached = JSON.parse(localStorage.getItem(CACHE_KEY) || 'null');
+        if (cached && Date.now() - cached.ts < CACHE_TTL) {
+            $('download-count-value').textContent = cached.total.toLocaleString();
+            return;
+        }
         const resp = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/releases?per_page=100`);
         if (!resp.ok) throw new Error('rate limited');
         const releases = await resp.json();
         let total = 0;
         releases.forEach(r => r.assets.forEach(a => { if (a.name.endsWith('.apk')) total += a.download_count; }));
+        localStorage.setItem(CACHE_KEY, JSON.stringify({ total, ts: Date.now() }));
         $('download-count-value').textContent = total.toLocaleString();
     } catch (e) {
         $('download-count-value').textContent = '—';
@@ -128,7 +157,7 @@ toast.addEventListener('click', () => {
 // ===== ЧЕЙНДЖЛОГ ИЗ JSON =====
 async function loadChangelog() {
     try {
-        const resp = await fetch('/changelog.json');
+        const resp = await fetch('changelog.json');
         if (!resp.ok) throw new Error('HTTP ' + resp.status);
         const data = await resp.json();
         const cl = data[currentLang];
@@ -162,10 +191,7 @@ if (!isTouch) {
     const INACTIVITY_DELAY = 3000, FADE_DURATION = 10000, RISE_DURATION = 2000;
     const gradientBg = $('gradient-bg');
 
-    document.head.insertAdjacentHTML('beforeend', `<style>
-        .gradient-bg::before{content:'';position:absolute;inset:0;pointer-events:none;background:radial-gradient(600px circle at var(--mx,50%) var(--my,50%),rgba(255,255,255,calc(.12*var(--go,1))) 0%,rgba(255,255,255,calc(.08*var(--go,1))) 20%,rgba(255,255,255,calc(.04*var(--go,1))) 40%,rgba(255,255,255,calc(.015*var(--go,1))) 60%,rgba(255,255,255,calc(.004*var(--go,1))) 80%,transparent 100%)}
-        body.light .gradient-bg::before{background:radial-gradient(600px circle at var(--mx,50%) var(--my,50%),rgba(0,0,0,calc(.10*var(--go,1))) 0%,rgba(0,0,0,calc(.06*var(--go,1))) 20%,rgba(0,0,0,calc(.03*var(--go,1))) 40%,rgba(0,0,0,calc(.012*var(--go,1))) 60%,rgba(0,0,0,calc(.004*var(--go,1))) 80%,transparent 100%)}
-    </style>`);
+
     gradientBg.style.setProperty('--mx', '50%'); gradientBg.style.setProperty('--my', '50%'); gradientBg.style.setProperty('--go', '1');
 
     function Particle() {
@@ -241,7 +267,6 @@ function renderContent() {
     const lng = UI[currentLang];
     if (!lng) return;
 
-    // Описание
     let h = `<p class="description-text">${esc(lng.aboutDesc)}</p>`;
     if (lng.features?.length) {
         h += '<ul class="feature-list">';
@@ -250,7 +275,6 @@ function renderContent() {
     }
     $('about-content').innerHTML = h;
 
-    // FAQ
     if (lng.faq?.length) {
         h = '<div class="faq-list">';
         lng.faq.forEach(q => h += `<div class="faq-item"><div class="faq-question">${esc(q.q)}</div><div class="faq-answer">${esc(q.a)}</div></div>`);
