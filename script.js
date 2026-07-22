@@ -11,7 +11,10 @@ const UI = {
         ],
         notFoundTitle: "Страница не найдена",
         notFoundText: "Такой страницы нет. Но есть WhiteMAX — без аналитики и трекеров.",
-        notFoundBtn: "← На главную"
+        notFoundBtn: "← На главную",
+        changelogLabel: "История",
+        changelogTitle: "Что нового",
+        currentBadge: "текущая"
     },
     en: {
         toast: "↓ Installation guide",
@@ -24,7 +27,10 @@ const UI = {
         ],
         notFoundTitle: "Page not found",
         notFoundText: "This page doesn't exist. But WhiteMAX does — without analytics and trackers.",
-        notFoundBtn: "← Home"
+        notFoundBtn: "← Home",
+        changelogLabel: "History",
+        changelogTitle: "What's new",
+        currentBadge: "current"
     }
 };
 
@@ -133,7 +139,32 @@ toast.addEventListener('click', () => {
     clearTimeout(toastTimer);
 });
 
-// ===== GITHUB API: СЧЁТЧИК СКАЧИВАНИЙ + ССЫЛКА =====
+// ===== ПАРСИНГ РЕЛИЗОВ =====
+const CAT_EN = { 'Добавлено': 'Added', 'Изменено': 'Changed', 'Исправлено': 'Fixed', 'Удалено': 'Removed' };
+
+function parseRelease(body) {
+    if (!body) return null;
+    const header = body.match(/##\s*\[(.+?)\]\s*-\s*(\d{4}-\d{2}-\d{2})/);
+    if (!header) return null;
+    const content = body.split(/\n---/)[0];
+    const sections = content.split(/^###\s+/m).slice(1);
+    const categories = [];
+    for (const sec of sections) {
+        const lines = sec.split('\n');
+        const name = lines[0].trim();
+        if (!['Добавлено', 'Изменено', 'Исправлено', 'Удалено'].includes(name)) continue;
+        const items = lines.slice(1).map(l => l.replace(/^\s*-\s*/, '').trim()).filter(l => l.length > 0);
+        if (items.length) categories.push({ name, items });
+    }
+    return categories.length ? { version: header[1], date: header[2], categories } : null;
+}
+
+function formatDate(iso, lang) {
+    const [y, m, d] = iso.split('-');
+    return lang === 'ru' ? `${d}.${m}.${y}` : `${m}/${d}/${y}`;
+}
+
+// ===== GITHUB API: СЧЁТЧИК + ССЫЛКА + ЧЕЙНДЖЛОГ =====
 (async function () {
     const CACHE_KEY = 'whitemax-dl-cache', CACHE_TTL = 60000;
     try {
@@ -141,38 +172,52 @@ toast.addEventListener('click', () => {
         if (cached && Date.now() - cached.ts < CACHE_TTL) {
             $('download-count-value').textContent = cached.total.toLocaleString();
             if (cached.url) $('download-btn').href = cached.url;
+            if (cached.changelog) loadChangelog();
             return;
         }
         const resp = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/releases?per_page=100`);
         if (!resp.ok) throw new Error('rate limited');
         const releases = await resp.json();
         let total = 0, url = '';
-        releases.forEach((r, i) => r.assets.forEach(a => {
-            if (a.name.endsWith('.apk') && !a.name.toLowerCase().includes('increased')) {
-                total += a.download_count;
-                if (!url) url = a.browser_download_url;
-            }
-        }));
+        const changelog = [];
+        releases.forEach(r => {
+            r.assets.forEach(a => {
+                if (a.name.endsWith('.apk') && !a.name.toLowerCase().includes('increased')) {
+                    total += a.download_count;
+                    if (!url) url = a.browser_download_url;
+                }
+            });
+            const parsed = parseRelease(r.body);
+            if (parsed) changelog.push(parsed);
+        });
+        // Сортировка по дате: от новых к старым
+        changelog.sort((a, b) => new Date(b.date) - new Date(a.date));
         if (url) $('download-btn').href = url;
-        localStorage.setItem(CACHE_KEY, JSON.stringify({ total, url, ts: Date.now() }));
+        localStorage.setItem(CACHE_KEY, JSON.stringify({ total, url, changelog, ts: Date.now() }));
         $('download-count-value').textContent = total.toLocaleString();
+        loadChangelog();
     } catch (e) {
         $('download-count-value').textContent = '—';
+        loadChangelog();
     }
 })();
 
-// ===== ЧЕЙНДЖЛОГ ИЗ JSON =====
+// ===== ЧЕЙНДЖЛОГ =====
 async function loadChangelog() {
     try {
+        const cached = JSON.parse(localStorage.getItem('whitemax-dl-cache') || 'null');
+        if (cached && cached.changelog && cached.changelog.length) {
+            renderChangelog(cached.changelog);
+            return;
+        }
+        // Fallback: changelog.json
         const resp = await fetch('changelog.json');
         if (!resp.ok) throw new Error('HTTP ' + resp.status);
         const data = await resp.json();
         const cl = data[currentLang];
         if (!cl) throw new Error('no lang');
-
         $('changelog-label').textContent = cl.label;
         $('changelog-title').textContent = cl.title;
-
         let h = '<div class="changelog-list">';
         cl.versions.forEach((v, i) => {
             h += `<div class="changelog-entry"><div class="changelog-header"><span class="changelog-version">${esc(v.version)}</span>${i === 0 ? ` <span class="current-badge">${esc(cl.currentBadge)}</span>` : ''}<span class="changelog-date">${esc(v.date)}</span></div><ul class="changelog-changes">`;
@@ -185,6 +230,25 @@ async function loadChangelog() {
         console.error('Changelog load error:', e);
         $('changelog-content').innerHTML = '<p class="description-text">Не удалось загрузить историю версий.</p>';
     }
+}
+
+function renderChangelog(changelog) {
+    $('changelog-label').textContent = t('changelogLabel');
+    $('changelog-title').textContent = t('changelogTitle');
+    const badge = t('currentBadge');
+    let h = '<div class="changelog-list">';
+    changelog.forEach((v, i) => {
+        h += `<div class="changelog-entry"><div class="changelog-header"><span class="changelog-version">${esc(v.version)}</span>${i === 0 ? ` <span class="current-badge">${esc(badge)}</span>` : ''}<span class="changelog-date">${esc(formatDate(v.date, currentLang))}</span></div>`;
+        v.categories.forEach(cat => {
+            const catName = currentLang === 'en' ? (CAT_EN[cat.name] || cat.name) : cat.name;
+            h += `<div class="changelog-category">${esc(catName)}</div><ul class="changelog-changes">`;
+            cat.items.forEach(item => h += `<li>${esc(item)}</li>`);
+            h += '</ul>';
+        });
+        h += '</div>';
+    });
+    h += '</div>';
+    $('changelog-content').innerHTML = h;
 }
 
 // ===== ДЕСКТОП: ЧАСТИЦЫ + ГРАДИЕНТ =====

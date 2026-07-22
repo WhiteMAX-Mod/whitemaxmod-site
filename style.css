@@ -41,6 +41,7 @@ body.light .section-title,.light .faq-question,.light .changelog-version,.light 
 body.light .feature-list li{color:#444}
 body.light .changelog-date{color:#999}
 body.light .changelog-changes li::before{color:#aaa}
+body.light .changelog-category{color:#999}
 body.light .install-step-icon{background:rgba(0,0,0,.05);color:#1a1a1a}
 body.light .toast{background:#f0f0f3;color:#1a1a1a;box-shadow:0 8px 30px rgba(0,0,0,.15)}
 body.light .btn{background:rgba(0,0,0,.05);color:#555}
@@ -290,8 +291,10 @@ section{margin-bottom:80px}
 .current-badge{display:inline-block;background:rgba(255,255,255,.1);color:#aaa;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:500;letter-spacing:.5px}
 body.light .current-badge{background:rgba(0,0,0,.06);color:#888}
 .changelog-date{font-size:14.3px;color:#555}
+.changelog-category{font-size:12px;font-weight:600;color:#666;text-transform:uppercase;letter-spacing:1px;margin:14px 0 6px;transition:color .8s cubic-bezier(.4,0,.2,1)}
+.changelog-entry .changelog-category:first-of-type{margin-top:4px}
 .changelog-changes{list-style:none;display:grid;gap:9px}
-.changelog-changes li{font-size:16.5px;color:#aaa;padding-left:18px;position:relative;line-height:1.7}
+.changelog-changes li{font-size:16.5px;color:#aaa;padding-left:24px;position:relative;line-height:1.7}
 .changelog-changes li::before{content:"—";position:absolute;left:0;color:#444}
 .divider{width:44px;height:2px;background:rgba(255,255,255,.06);border-radius:1px;margin:0 auto 62px}
 .loader{padding:53px;color:#aaa}
