@@ -203,33 +203,16 @@ function formatDate(iso, lang) {
 })();
 
 // ===== ЧЕЙНДЖЛОГ =====
-async function loadChangelog() {
-    try {
-        const cached = JSON.parse(localStorage.getItem('whitemax-dl-cache') || 'null');
-        if (cached && cached.changelog && cached.changelog.length) {
-            renderChangelog(cached.changelog);
-            return;
-        }
-        // Fallback: changelog.json
-        const resp = await fetch('changelog.json');
-        if (!resp.ok) throw new Error('HTTP ' + resp.status);
-        const data = await resp.json();
-        const cl = data[currentLang];
-        if (!cl) throw new Error('no lang');
-        $('changelog-label').textContent = cl.label;
-        $('changelog-title').textContent = cl.title;
-        let h = '<div class="changelog-list">';
-        cl.versions.forEach((v, i) => {
-            h += `<div class="changelog-entry"><div class="changelog-header"><span class="changelog-version">${esc(v.version)}</span>${i === 0 ? ` <span class="current-badge">${esc(cl.currentBadge)}</span>` : ''}<span class="changelog-date">${esc(v.date)}</span></div><ul class="changelog-changes">`;
-            v.changes.forEach(c => h += `<li>${esc(c)}</li>`);
-            h += '</ul></div>';
-        });
-        h += '</div>';
-        $('changelog-content').innerHTML = h;
-    } catch (e) {
-        console.error('Changelog load error:', e);
-        $('changelog-content').innerHTML = '<p class="description-text">Не удалось загрузить историю версий.</p>';
+function loadChangelog() {
+    const cached = JSON.parse(localStorage.getItem('whitemax-dl-cache') || 'null');
+    if (cached && cached.changelog && cached.changelog.length) {
+        renderChangelog(cached.changelog);
+        return;
     }
+    // Если кеша нет — показываем заглушку
+    $('changelog-label').textContent = t('changelogLabel');
+    $('changelog-title').textContent = t('changelogTitle');
+    $('changelog-content').innerHTML = '<p class="description-text">Загрузка истории версий...</p>';
 }
 
 function renderChangelog(changelog) {
