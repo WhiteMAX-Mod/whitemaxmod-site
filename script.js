@@ -48,7 +48,6 @@ function applyLanguage() {
     document.documentElement.lang = currentLang;
     $('lang-toggle').textContent = currentLang === 'ru' ? 'EN' : 'RU';
 
-    // Элементы с data-ru/data-en
     document.querySelectorAll('[data-ru][data-en]').forEach(el => {
         const val = el.getAttribute(`data-${currentLang}`);
         if (val.includes('<br>')) {
@@ -178,22 +177,41 @@ function formatDate(iso, lang) {
         const resp = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/releases?per_page=100`);
         if (!resp.ok) throw new Error('rate limited');
         const releases = await resp.json();
-        let total = 0, url = '';
+
+        let total = 0;
+        let latestUrl = '';
+        let latestDate = '';
         const changelog = [];
-        releases.forEach(r => {
-            r.assets.forEach(a => {
+
+        // Ищем самый свежий релиз по дате из релизнота
+        for (const r of releases) {
+            for (const a of r.assets) {
                 if (a.name.endsWith('.apk') && !a.name.toLowerCase().includes('increased')) {
                     total += a.download_count;
-                    if (!url) url = a.browser_download_url;
                 }
-            });
+            }
             const parsed = parseRelease(r.body);
-            if (parsed) changelog.push(parsed);
-        });
-        // Сортировка по дате: от новых к старым
+            if (parsed) {
+                changelog.push(parsed);
+                // Берём первый же APK из этого релиза как кандидат
+                for (const a of r.assets) {
+                    if (a.name.endsWith('.apk') && !a.name.toLowerCase().includes('increased')) {
+                        if (!latestDate || new Date(parsed.date) > new Date(latestDate)) {
+                            latestDate = parsed.date;
+                            latestUrl = a.browser_download_url;
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+
+        // Сортировка чейнджлога по дате версии (от новых к старым)
         changelog.sort((a, b) => new Date(b.date) - new Date(a.date));
-        if (url) $('download-btn').href = url;
-        localStorage.setItem(CACHE_KEY, JSON.stringify({ total, url, changelog, ts: Date.now() }));
+
+        if (latestUrl) $('download-btn').href = latestUrl;
+
+        localStorage.setItem(CACHE_KEY, JSON.stringify({ total, url: latestUrl, changelog, ts: Date.now() }));
         $('download-count-value').textContent = total.toLocaleString();
         loadChangelog();
     } catch (e) {
@@ -209,7 +227,6 @@ function loadChangelog() {
         renderChangelog(cached.changelog);
         return;
     }
-    // Если кеша нет — показываем заглушку
     $('changelog-label').textContent = t('changelogLabel');
     $('changelog-title').textContent = t('changelogTitle');
     $('changelog-content').innerHTML = '<p class="description-text">Загрузка истории версий...</p>';
@@ -244,7 +261,6 @@ if (!isTouch) {
     let lastActivity = performance.now(), isFading = false;
     const INACTIVITY_DELAY = 3000, FADE_DURATION = 10000, RISE_DURATION = 2000;
     const gradientBg = $('gradient-bg');
-
 
     gradientBg.style.setProperty('--mx', '50%'); gradientBg.style.setProperty('--my', '50%'); gradientBg.style.setProperty('--go', '1');
 
