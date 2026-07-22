@@ -1,0 +1,17 @@
+{
+  "name": "WhiteMAX",
+  "short_name": "WhiteMAX",
+  "description": "Модифицированная версия MAX с минимальной аналитикой",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#2a2a2e",
+  "theme_color": "#2a2a2e",
+  "icons": [
+    {
+      "src": "images/icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

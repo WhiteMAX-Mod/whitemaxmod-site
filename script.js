@@ -133,21 +133,28 @@ toast.addEventListener('click', () => {
     clearTimeout(toastTimer);
 });
 
-// ===== GITHUB API: СЧЁТЧИК СКАЧИВАНИЙ =====
+// ===== GITHUB API: СЧЁТЧИК СКАЧИВАНИЙ + ССЫЛКА =====
 (async function () {
-    const CACHE_KEY = 'whitemax-dl-cache', CACHE_TTL = 3600000;
+    const CACHE_KEY = 'whitemax-dl-cache', CACHE_TTL = 60000;
     try {
         const cached = JSON.parse(localStorage.getItem(CACHE_KEY) || 'null');
         if (cached && Date.now() - cached.ts < CACHE_TTL) {
             $('download-count-value').textContent = cached.total.toLocaleString();
+            if (cached.url) $('download-btn').href = cached.url;
             return;
         }
         const resp = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/releases?per_page=100`);
         if (!resp.ok) throw new Error('rate limited');
         const releases = await resp.json();
-        let total = 0;
-        releases.forEach(r => r.assets.forEach(a => { if (a.name.endsWith('.apk')) total += a.download_count; }));
-        localStorage.setItem(CACHE_KEY, JSON.stringify({ total, ts: Date.now() }));
+        let total = 0, url = '';
+        releases.forEach((r, i) => r.assets.forEach(a => {
+            if (a.name.endsWith('.apk') && !a.name.toLowerCase().includes('increased')) {
+                total += a.download_count;
+                if (!url) url = a.browser_download_url;
+            }
+        }));
+        if (url) $('download-btn').href = url;
+        localStorage.setItem(CACHE_KEY, JSON.stringify({ total, url, ts: Date.now() }));
         $('download-count-value').textContent = total.toLocaleString();
     } catch (e) {
         $('download-count-value').textContent = '—';
@@ -220,12 +227,6 @@ if (!isTouch) {
     function resize() { canvas.width = innerWidth; canvas.height = innerHeight; }
     addEventListener('resize', resize); resize();
 
-    (function loop() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        for (let i = 0; i < PC; i++) { particles[i].update(currentX, currentY); particles[i].draw(); }
-        requestAnimationFrame(loop);
-    })();
-
     function resetActivity() {
         const now = performance.now();
         if (isFading && glowOpacity < 1) { isFading = false; isRising = true; riseStartOpacity = glowOpacity; riseStartTime = now; }
@@ -234,7 +235,7 @@ if (!isTouch) {
     addEventListener('mousemove', e => { mouseX = e.clientX; mouseY = e.clientY; resetActivity(); });
     addEventListener('click', resetActivity); addEventListener('scroll', resetActivity, { passive: true }); addEventListener('keydown', resetActivity);
 
-    (function gloop() {
+    (function loop() {
         currentX += (mouseX - currentX) * 0.07; currentY += (mouseY - currentY) * 0.07;
         const now = performance.now(), idle = now - lastActivity;
         if (isRising) {
@@ -246,7 +247,10 @@ if (!isTouch) {
         gradientBg.style.setProperty('--mx', currentX + 'px');
         gradientBg.style.setProperty('--my', currentY + 'px');
         gradientBg.style.setProperty('--go', glowOpacity);
-        requestAnimationFrame(gloop);
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        for (let i = 0; i < PC; i++) { particles[i].update(currentX, currentY); particles[i].draw(); }
+        requestAnimationFrame(loop);
     })();
 }
 

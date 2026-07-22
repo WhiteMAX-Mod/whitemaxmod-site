@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /.git/
+
+Sitemap: https://whitemaxmod.com/sitemap.xml
