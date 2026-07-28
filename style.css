@@ -1,24 +1,3 @@
-/* ==========================================================================
-   WhiteMAX Site - Main Stylesheet (style.css)
-   Версия: 2.0.0
-   --------------------------------------------------------------------------
-   СОДЕРЖАНИЕ СТИЛЕЙ:
-   1. BASE & RESET              - Базовый сброс, шрифты, тач-свойства
-   2. LIGHT THEME OVERRIDES     - Правила и цвета для светлой темы
-   3. GLOBAL ANIMATIONS & FONTS  - Шрифты семейств Inter и DM Sans
-   4. BACKGROUND & OVERLAYS     - Радиальные градиенты, grid-сетка и частицы
-   5. NAVIGATION & HEADER       - Фиксированная верхняя панель (top-nav)
-   6. HERO SECTION & DOWNLOAD   - Логотип, кнопки скачивания, соглашение
-   7. SECTIONS & CARDS          - Установка, чейнджлог, карточки статистики
-   8. EASTER EGG & MINIGAME     - Физика кубозаврика и холст Дино-игры
-   9. TOAST & NOTIFICATIONS     - Всплывающие уведомления и кнопка «Наверх»
-   10. FOOTER & LEGAL           - Подвал сайта и копирайты
-   11. RESPONSIVE DESIGN        - Адаптивы для смартфонов и планшетов
-   ========================================================================== */
-
-/* ==========================================================================
-   1. BASE & RESET (Базовый сброс и шрифты)
-   ========================================================================== */
 *{margin:0;padding:0;box-sizing:border-box}html{scroll-behavior:smooth}
 body{
     font-family:'Inter',system-ui,-apple-system,sans-serif;
@@ -39,9 +18,7 @@ button, a, .btn, .nav-link, .lang-toggle, .theme-toggle, .contact-toggle, .scrol
     font-family:'DM Sans',system-ui,-apple-system,sans-serif;
 }
 
-/* ==========================================================================
-   2. LIGHT THEME OVERRIDES (Светлая тема)
-   ========================================================================== */
+/* ===== СВЕТЛАЯ ТЕМА ===== */
 body.light{
     background:#f2f2f5;color:#1a1a1a;
     scrollbar-color:rgba(0,0,0,.15) transparent;
@@ -107,9 +84,27 @@ body.light .contact-toggle:hover{
     background:rgba(0,0,0,.12);color:#1a1a1a;
 }
 
-/* ==========================================================================
-   4. BACKGROUND & OVERLAYS (Фоновые градиенты, сетка и эффекты)
-   ========================================================================== */
+/* Плавные переходы */
+.gradient-bg,.gradient-bg::after,.grid-overlay,.particle-dot,
+.logo-text,.logo-text span,.logo-icon-fallback,.tagline,
+.btn,.btn-primary,.btn-support,.agreement-text,.agreement-text a,.download-warning,
+.section-label,.section-title,.section-icon,.description-text,
+.feature-list li,.feature-list li::before,.faq-question,.faq-question::after,
+.faq-answer,.changelog-version,.changelog-date,.changelog-changes li,.changelog-changes li::before,
+.divider,.loader-spin,footer,footer a,footer .disclaimer,
+.scroll-top-btn,.contact-toggle,.top-bar .lang-toggle,.top-bar .theme-toggle,
+.install-step h4,.install-step p,.install-step-icon,.toast,
+.contact-panel,.contact-label,.contact-value{
+    transition:color .8s cubic-bezier(.4,0,.2,1),background .8s cubic-bezier(.4,0,.2,1),border-color .8s cubic-bezier(.4,0,.2,1),box-shadow .8s cubic-bezier(.4,0,.2,1);
+}
+
+/* Скроллбар */
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,.25)}
+
+/* Фон */
 .gradient-bg,.grid-overlay,#particles-canvas,.particles-css{position:fixed;inset:0;z-index:0;pointer-events:none}
 .gradient-bg{
     background:radial-gradient(ellipse at 50% 30%,#3a3a40 0%,#333338 25%,#2d2d32 50%,#2a2a2e 70%,#25252a 85%,#222226 100%);
@@ -132,9 +127,22 @@ body.light .contact-toggle:hover{
 .particle-dot{position:absolute;border-radius:50%;background:#fff;opacity:0;animation:floatUp var(--dur,8s) var(--delay,0s) infinite ease-in}
 @keyframes floatUp{0%{opacity:0;transform:translateY(0) translateX(0)}10%{opacity:var(--op,.15)}90%{opacity:var(--op,.15)}100%{opacity:0;transform:translateY(-100vh) translateX(var(--drift,20px))}}
 
-/* ==========================================================================
-   5. NAVIGATION & HEADER (Верхняя панель навигации и переключатели)
-   ========================================================================== */
+/* Тост */
+.toast-container{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);z-index:200;pointer-events:none}
+.toast{
+    background:rgba(255,255,255,.95);color:#1a1a1a;
+    padding:14px 24px;border-radius:50px;
+    font-size:14px;font-weight:500;
+    box-shadow:0 8px 30px rgba(0,0,0,.4);
+    cursor:pointer;pointer-events:none;
+    opacity:0;transform:translateY(20px);
+    transition:opacity .35s cubic-bezier(.4,0,.2,1), transform .35s cubic-bezier(.4,0,.2,1), background-color .35s cubic-bezier(.4,0,.2,1);
+    white-space:nowrap;max-width:calc(100vw - 32px);overflow:hidden;text-overflow:ellipsis;
+}
+.toast.visible{opacity:1;transform:translateY(0);pointer-events:auto}
+.toast:hover{background:#fff}
+
+/* Верхняя панель */
 .top-bar{
     position:fixed;top:20px;right:20px;z-index:100;
     display:flex;align-items:center;gap:8px;
@@ -348,9 +356,7 @@ footer .disclaimer{color:#444;font-size:13.2px}
 @media (max-width: 400px) {
     .nav-link{font-size:10px;padding:0 6px}
     .top-bar{gap:4px}
-/* ==========================================================================
-   11. RESPONSIVE DESIGN & MEDIA QUERIES (Адаптивность для мобильных)
-   ========================================================================== */
+}
 @media(max-width:600px){
     body{font-size:16px}
     .container{max-width:100%;padding:0 20px}
@@ -441,9 +447,7 @@ footer .disclaimer{color:#444;font-size:13.2px}
 
 
 
-/* ==========================================================================
-   8. EASTER EGG & MINIGAME (Пасхалка: Кубозаврик и Холст игры)
-   ========================================================================== */
+/* Плавающий кубозаврик на фоне */
 .floating-cubosaur {
     position: fixed;
     width: 9px;

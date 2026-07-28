@@ -1,28 +1,8 @@
-/**
- * ==========================================================================
- * WhiteMAX Site - Core Script Logic (script.js)
- * Версия: 2.0.0
- * --------------------------------------------------------------------------
- * СОДЕРЖАНИЕ МОДУЛЕЙ:
- * 1. LOCALIZATION & DICTIONARY  - Текстовый контент (RU/EN) и словарь UI
- * 2. UTILITY & STATE HELPERS    - Базовые DOM-утилиты, определение тач-экрана
- * 3. LANGUAGE & THEME SWITCH    - Переключение темного/светлого режима и языка
- * 4. ROUTER & SPA NAVIGATION    - Роутер (Hash Change), загрузка страниц #about, #download
- * 5. GITHUB RELEASES & API      - Загрузка релизов с GitHub API, подсчет скачиваний
- * 6. PARTICLES ENGINE           - 60 FPS движок частиц (Canvas ПК + CSS Мобильные)
- * 7. CUBOSAUR EASTER EGG        - Интерактивный кубозаврик (Физика отталкивания)
- * 8. DINO MINIGAME              - Мини-игра (Рендеринг, хитбоксы, игровой цикл)
- * 9. GLOBAL EVENT DELEGATION    - Обработчики тостов, FAQ, копирования и кнопок
- * ==========================================================================
- */
-
-/* ==========================================================================
-   1. LOCALIZATION & DICTIONARY (Локализация и переводы)
-   ========================================================================== */
+// ===== ЛОКАЛИЗАЦИЯ (только UI-строки и контент) =====
 const UI = {
     ru: {
         toast: "↓ Инструкция по установке",
-        aboutDesc: "WhiteMAX — это независимая модификация российского мессенджера MAX, созданная с целью вернуть пользователю контроль над своей приватностью.",
+        aboutDesc: "WhiteMAX — это модифицированная версия мессенджера MAX, нацеленная на максимальное сокращение сбора аналитических данных. Вырезаны трекеры, отключены лишние сетевые запросы и возвращён контроль над приватностью тебе.",
         features: ["Отключены встроенные системы аналитики и сбора метрик", "Заблокированы обращения к сторонним трекерам", "Минимум сетевой активности в фоне", "Сохраняется полная функциональность мессенджера"],
         faq: [
             { q: "Это безопасно? Меня не забанят?", a: "WhiteMAX не вмешивается в логику работы серверной части MAX. Модифицируется только клиент — убирается сбор аналитики. Риск блокировки минимален, но формально это модификация — используй на свой страх и риск." },
@@ -54,31 +34,16 @@ const UI = {
     }
 };
 
-/* ==========================================================================
-   2. UTILITY & STATE HELPERS (Вспомогательные функции)
-   ========================================================================== */
+// ===== УТИЛИТЫ =====
 const GITHUB_REPO = 'WhiteMAX-Mod/whitemaxmod';
-
-/** Вызов элемента по ID */
 const $ = id => document.getElementById(id);
-
-/** Экранирование спецсимволов HTML для защиты от XSS */
 const _escEl = document.createElement('div');
 const esc = s => { _escEl.textContent = s; return _escEl.innerHTML; };
-
-/** Проверка сенсорного экрана */
 const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-
-/** Текущий выбранный язык */
 let currentLang = localStorage.getItem('whitemax-lang') || 'ru';
-
-/** Получение переведенной строки по ключу */
 const t = key => UI[currentLang][key];
 
-/* ==========================================================================
-   3. LANGUAGE & THEME SWITCH (Переключение языка и темы)
-   ========================================================================== */
-/** Применяет сохраненный язык к странице */
+// ===== ПЕРЕКЛЮЧЕНИЕ ЯЗЫКА =====
 function applyLanguage() {
     document.documentElement.lang = currentLang;
     if ($('lang-toggle')) $('lang-toggle').textContent = currentLang === 'ru' ? 'EN' : 'RU';
@@ -107,6 +72,19 @@ if ($('lang-toggle')) {
     });
 }
 
+// ===== 404 =====
+const validPaths = ['/', '/index.html', '/about', '/download', '/contacts'];
+const is404 = !validPaths.some(p => window.location.pathname.includes(p));
+if (is404 && $('main-content')) {
+    $('main-content').innerHTML = `
+        <div class="page-404">
+            <div class="code">404</div>
+            <h2>${t('notFoundTitle')}</h2>
+            <p>${t('notFoundText')}</p>
+            <a href="/" class="btn btn-primary" style="display:inline-flex">${t('notFoundBtn')}</a>
+        </div>`;
+}
+
 // ===== ТЕМА =====
 const savedTheme = localStorage.getItem('whitemax-theme');
 if (savedTheme === 'light') document.body.classList.add('light');
@@ -117,85 +95,69 @@ if ($('theme-toggle')) {
     });
 }
 
-/* ==========================================================================
-   4. ROUTER & SPA NAVIGATION (Хеш-роутинг и динамическая загрузка)
-   ========================================================================== */
-/** Извлекает имя страницы из хеша URL (например, #about -> about) */
-function getHashPath() {
-    const hash = window.location.hash.replace('#', '');
-    return hash || 'index';
-}
-
-/** Обновляет активный класс в меню навигации */
-function updateActiveNav(hashPath) {
-    document.querySelectorAll('.nav-link, .spa-link').forEach(n => {
-        let href = n.getAttribute('href');
-        if (href) href = href.replace('#', '');
-        if (!href || href === '/') href = 'index';
-        
-        if (href === hashPath) {
-            n.classList.add('active');
-        } else {
-            n.classList.remove('active');
-        }
+// (Старая панель связи удалена, теперь для этого есть отдельная страница)
+document.querySelectorAll('.contact-value').forEach(el => {
+    el.addEventListener('click', () => {
+        navigator.clipboard.writeText(el.textContent).catch(() => {});
+        el.style.opacity = '0.5';
+        setTimeout(() => { el.style.opacity = ''; }, 200);
     });
-}
+});
 
-/** Загружает и внедряет динамический контент выбранной страницы без перезагрузки */
-async function handleHashChange() {
-    const hashPath = getHashPath();
-    updateActiveNav(hashPath);
-    
-    let targetUrl = hashPath === 'index' ? 'index.html' : `${hashPath}.html`;
-    
-    const mc = $('main-content');
-    if (mc) mc.style.opacity = '0';
-    
-    try {
-        const resp = await fetch(targetUrl);
-        if (!resp.ok) throw new Error('not found');
-        const html = await resp.text();
-        
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(html, 'text/html');
-        const newContent = doc.querySelector('#main-content');
-        
-        if (mc && newContent) {
-            setTimeout(() => {
-                mc.className = newContent.className;
-                mc.style.cssText = newContent.style.cssText;
-                mc.innerHTML = newContent.innerHTML;
-                mc.style.opacity = '1';
-                document.title = doc.title;
-                applyLanguage();
-                updateGithubData();
-                initMiniGame();
-                window.scrollTo(0, 0);
-            }, 300);
+// ===== КНОПКА НАВЕРХ =====
+addEventListener('scroll', () => { $('scroll-top-btn')?.classList.toggle('visible', scrollY > 400); }, { passive: true });
+$('scroll-top-btn')?.addEventListener('click', () => { scrollTo({ top: 0, behavior: 'smooth' }); });
+
+// ===== ГЛОБАЛЬНЫЕ ОБРАБОТЧИКИ (Event Delegation) =====
+let warningTimer = null, toastTimer = null;
+
+document.addEventListener('click', (e) => {
+    // 1. Кнопка скачивания и Тост
+    const btn = e.target.closest('#download-btn');
+    if (btn) {
+        if (warningTimer) return;
+        const dw = $('download-warning');
+        if (dw) {
+            if (!dw.classList.contains('visible')) {
+                dw.classList.add('visible');
+            } else {
+                dw.classList.remove('visible');
+                void dw.offsetWidth;
+                dw.classList.add('visible');
+            }
+            warningTimer = setTimeout(() => { dw.classList.remove('visible'); warningTimer = null; }, 10000);
         }
-    } catch(e) {
-        if (mc) {
-            setTimeout(() => {
-                mc.innerHTML = `<div class="page-404"><div class="code">404</div><h2>${t('notFoundTitle')}</h2><p>${t('notFoundText')}</p></div>`;
-                mc.style.opacity = '1';
-            }, 300);
+        const t = $('toast');
+        if (t) {
+            clearTimeout(toastTimer);
+            t.classList.add('visible');
+            toastTimer = setTimeout(() => { t.classList.remove('visible'); }, 6000);
         }
     }
-}
 
-window.addEventListener('hashchange', handleHashChange);
-if (window.location.hash) {
-    handleHashChange();
-} else {
-    updateActiveNav('index');
-}
+    // 2. FAQ
+    const faqQ = e.target.closest('.faq-question');
+    if (faqQ) {
+        const item = faqQ.parentElement;
+        const open = item.classList.contains('open');
+        document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+        if (!open) item.classList.add('open');
+    }
 
-/* ==========================================================================
-   5. GITHUB RELEASES & API (Загрузка данных релизов с GitHub API)
-   ========================================================================== */
+    // 3. (Удален старый SPA роутер на основе pushState)
+    
+    // 4. Клик по тосту
+    const toastEl = e.target.closest('#toast');
+    if (toastEl) {
+        document.getElementById('install-section')?.scrollIntoView({ behavior: 'smooth' });
+        toastEl.classList.remove('visible');
+        clearTimeout(toastTimer);
+    }
+});
+
+// ===== ПАРСИНГ РЕЛИЗОВ =====
 const CAT_EN = { 'Добавлено': 'Added', 'Изменено': 'Changed', 'Исправлено': 'Fixed', 'Удалено': 'Removed' };
 
-/** Парсит тексты релизов с разделением по категориям */
 function parseRelease(body) {
     if (!body) return null;
     const header = body.match(/##\s*\[(.+?)\]\s*-\s*(\d{4}-\d{2}-\d{2})/);
@@ -213,15 +175,14 @@ function parseRelease(body) {
     return categories.length ? { version: header[1], date: header[2], categories } : null;
 }
 
-/** Форматирует ISO дату под выбранный язык */
 function formatDate(iso, lang) {
     const [y, m, d] = iso.split('-');
     return lang === 'ru' ? `${d}.${m}.${y}` : `${m}/${d}/${y}`;
 }
 
-/** Запрашивает статистику скачиваний и прямые ссылки с GitHub API */
+// ===== GITHUB API: СЧЁТЧИК + ССЫЛКА + ЧЕЙНДЖЛОГ =====
 async function updateGithubData() {
-    const CACHE_KEY = 'whitemax-dl-cache', CACHE_TTL = 300000;
+    const CACHE_KEY = 'whitemax-dl-cache', CACHE_TTL = 300000; // 5 минут
     let cached;
     try {
         cached = JSON.parse(localStorage.getItem(CACHE_KEY));
@@ -269,7 +230,7 @@ async function updateGithubData() {
         loadChangelog();
     } catch (e) {
         if (cached) {
-            cached.ts = Date.now();
+            cached.ts = Date.now(); // Фикс лимита API: не долбим API при Rate Limit
             localStorage.setItem(CACHE_KEY, JSON.stringify(cached));
             
             if ($('download-count-value')) $('download-count-value').textContent = cached.total.toLocaleString();
@@ -282,7 +243,7 @@ async function updateGithubData() {
     }
 }
 
-/** Рендерит списки из изменений релизов */
+// ===== ЧЕЙНДЖЛОГ =====
 function loadChangelog() {
     const clLabel = $('changelog-label'), clTitle = $('changelog-title'), clContent = $('changelog-content');
     if (!clLabel) return;
@@ -315,9 +276,7 @@ function renderChangelog(changelog) {
     clContent.innerHTML = h;
 }
 
-/* ==========================================================================
-   6. PARTICLES ENGINE (Движок фоновых частиц Canvas / CSS)
-   ========================================================================== */
+// ===== ДЕСКТОП: ЧАСТИЦЫ + ГРАДИЕНТ =====
 if (!isTouch && $('particles-canvas')) {
     const canvas = $('particles-canvas'), ctx = canvas.getContext('2d');
     const PC = 100, CR = 400, RF = 0.65;
@@ -378,6 +337,7 @@ if (!isTouch && $('particles-canvas')) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         const isLight = document.body.classList.contains('light');
         
+        // Оптимизация: рисуем свечение средствами канваса
         if (glowOpacity > 0.01) {
             const rg = ctx.createRadialGradient(currentX, currentY, 0, currentX, currentY, 600);
             if (isLight) {
@@ -404,6 +364,7 @@ if (!isTouch && $('particles-canvas')) {
     })();
 }
 
+// ===== МОБИЛКИ: CSS-ЧАСТИЦЫ =====
 if (isTouch && $('particles-css')) {
     const container = $('particles-css'), N = 50, frag = document.createDocumentFragment();
     for (let i = 0; i < N; i++) {
