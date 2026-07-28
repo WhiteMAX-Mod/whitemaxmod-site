@@ -1,8 +1,28 @@
-// ===== ЛОКАЛИЗАЦИЯ (только UI-строки и контент) =====
+/**
+ * ==========================================================================
+ * WhiteMAX Site - Core Script Logic (script.js)
+ * Версия: 2.0.0
+ * --------------------------------------------------------------------------
+ * СОДЕРЖАНИЕ МОДУЛЕЙ:
+ * 1. LOCALIZATION & DICTIONARY  - Текстовый контент (RU/EN) и словарь UI
+ * 2. UTILITY & STATE HELPERS    - Базовые DOM-утилиты, определение тач-экрана
+ * 3. LANGUAGE & THEME SWITCH    - Переключение темного/светлого режима и языка
+ * 4. ROUTER & SPA NAVIGATION    - Роутер (Hash Change), загрузка страниц #about, #download
+ * 5. GITHUB RELEASES & API      - Загрузка релизов с GitHub API, подсчет скачиваний
+ * 6. PARTICLES ENGINE           - 60 FPS движок частиц (Canvas ПК + CSS Мобильные)
+ * 7. CUBOSAUR EASTER EGG        - Интерактивный кубозаврик (Физика отталкивания)
+ * 8. DINO MINIGAME              - Мини-игра (Рендеринг, хитбоксы, игровой цикл)
+ * 9. GLOBAL EVENT DELEGATION    - Обработчики тостов, FAQ, копирования и кнопок
+ * ==========================================================================
+ */
+
+/* ==========================================================================
+   1. LOCALIZATION & DICTIONARY (Локализация и переводы)
+   ========================================================================== */
 const UI = {
     ru: {
         toast: "↓ Инструкция по установке",
-        aboutDesc: "WhiteMAX — это модифицированная версия мессенджера MAX, нацеленная на максимальное сокращение сбора аналитических данных. Вырезаны трекеры, отключены лишние сетевые запросы и возвращён контроль над приватностью тебе.",
+        aboutDesc: "WhiteMAX — это независимая модификация российского мессенджера MAX, созданная с целью вернуть пользователю контроль над своей приватностью.",
         features: ["Отключены встроенные системы аналитики и сбора метрик", "Заблокированы обращения к сторонним трекерам", "Минимум сетевой активности в фоне", "Сохраняется полная функциональность мессенджера"],
         faq: [
             { q: "Это безопасно? Меня не забанят?", a: "WhiteMAX не вмешивается в логику работы серверной части MAX. Модифицируется только клиент — убирается сбор аналитики. Риск блокировки минимален, но формально это модификация — используй на свой страх и риск." },
@@ -34,113 +54,148 @@ const UI = {
     }
 };
 
-// ===== УТИЛИТЫ =====
+/* ==========================================================================
+   2. UTILITY & STATE HELPERS (Вспомогательные функции)
+   ========================================================================== */
 const GITHUB_REPO = 'WhiteMAX-Mod/whitemaxmod';
+
+/** Вызов элемента по ID */
 const $ = id => document.getElementById(id);
+
+/** Экранирование спецсимволов HTML для защиты от XSS */
 const _escEl = document.createElement('div');
 const esc = s => { _escEl.textContent = s; return _escEl.innerHTML; };
+
+/** Проверка сенсорного экрана */
 const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+
+/** Текущий выбранный язык */
 let currentLang = localStorage.getItem('whitemax-lang') || 'ru';
+
+/** Получение переведенной строки по ключу */
 const t = key => UI[currentLang][key];
 
-// ===== ПЕРЕКЛЮЧЕНИЕ ЯЗЫКА =====
+/* ==========================================================================
+   3. LANGUAGE & THEME SWITCH (Переключение языка и темы)
+   ========================================================================== */
+/** Применяет сохраненный язык к странице */
 function applyLanguage() {
     document.documentElement.lang = currentLang;
-    $('lang-toggle').textContent = currentLang === 'ru' ? 'EN' : 'RU';
+    if ($('lang-toggle')) $('lang-toggle').textContent = currentLang === 'ru' ? 'EN' : 'RU';
 
     document.querySelectorAll('[data-ru][data-en]').forEach(el => {
         const val = el.getAttribute(`data-${currentLang}`);
-        if (val.includes('<br>')) {
-            el.innerHTML = val;
-        } else {
-            el.textContent = val;
+        if (val) {
+            if (val.includes('<br>')) {
+                el.innerHTML = val;
+            } else {
+                el.textContent = val;
+            }
         }
     });
 
-    $('toast').textContent = t('toast');
+    if ($('toast')) $('toast').textContent = t('toast');
     renderContent();
     loadChangelog();
 }
 
-// ===== 404 =====
-if (window.location.pathname !== '/' && window.location.pathname !== '/index.html') {
-    $('main-content').innerHTML = `
-        <div class="page-404">
-            <div class="code">404</div>
-            <h2>${t('notFoundTitle')}</h2>
-            <p>${t('notFoundText')}</p>
-            <a href="/" class="btn btn-primary" style="display:inline-flex">${t('notFoundBtn')}</a>
-        </div>`;
+if ($('lang-toggle')) {
+    $('lang-toggle').addEventListener('click', () => {
+        currentLang = currentLang === 'ru' ? 'en' : 'ru';
+        localStorage.setItem('whitemax-lang', currentLang);
+        applyLanguage();
+    });
 }
 
 // ===== ТЕМА =====
 const savedTheme = localStorage.getItem('whitemax-theme');
 if (savedTheme === 'light') document.body.classList.add('light');
-$('theme-toggle').addEventListener('click', () => {
-    document.body.classList.toggle('light');
-    localStorage.setItem('whitemax-theme', document.body.classList.contains('light') ? 'light' : 'dark');
-});
-
-// ===== ЯЗЫК =====
-$('lang-toggle').addEventListener('click', () => {
-    currentLang = currentLang === 'ru' ? 'en' : 'ru';
-    localStorage.setItem('whitemax-lang', currentLang);
-    applyLanguage();
-});
-
-// ===== ПАНЕЛЬ СВЯЗИ =====
-const contactToggle = $('contact-toggle');
-const contactPanel = $('contact-panel');
-
-contactToggle.addEventListener('click', (e) => {
-    e.stopPropagation();
-    contactPanel.classList.toggle('visible');
-});
-document.addEventListener('click', (e) => {
-    if (!contactPanel.contains(e.target) && e.target !== contactToggle && !contactToggle.contains(e.target)) {
-        contactPanel.classList.remove('visible');
-    }
-});
-document.querySelectorAll('.contact-value').forEach(el => {
-    el.addEventListener('click', () => {
-        navigator.clipboard.writeText(el.textContent).catch(() => {});
-        el.style.opacity = '0.5';
-        setTimeout(() => { el.style.opacity = ''; }, 200);
+if ($('theme-toggle')) {
+    $('theme-toggle').addEventListener('click', () => {
+        document.body.classList.toggle('light');
+        localStorage.setItem('whitemax-theme', document.body.classList.contains('light') ? 'light' : 'dark');
     });
-});
+}
 
-// ===== КНОПКА НАВЕРХ =====
-addEventListener('scroll', () => { $('scroll-top-btn').classList.toggle('visible', scrollY > 400); }, { passive: true });
-$('scroll-top-btn').addEventListener('click', () => { scrollTo({ top: 0, behavior: 'smooth' }); });
+/* ==========================================================================
+   4. ROUTER & SPA NAVIGATION (Хеш-роутинг и динамическая загрузка)
+   ========================================================================== */
+/** Извлекает имя страницы из хеша URL (например, #about -> about) */
+function getHashPath() {
+    const hash = window.location.hash.replace('#', '');
+    return hash || 'index';
+}
 
-// ===== КНОПКА СКАЧИВАНИЯ + ТОСТ =====
-const downloadBtn = $('download-btn'), downloadWarning = $('download-warning'), toast = $('toast');
-let warningTimer = null, toastTimer = null;
+/** Обновляет активный класс в меню навигации */
+function updateActiveNav(hashPath) {
+    document.querySelectorAll('.nav-link, .spa-link').forEach(n => {
+        let href = n.getAttribute('href');
+        if (href) href = href.replace('#', '');
+        if (!href || href === '/') href = 'index';
+        
+        if (href === hashPath) {
+            n.classList.add('active');
+        } else {
+            n.classList.remove('active');
+        }
+    });
+}
 
-downloadBtn.addEventListener('click', () => {
-    if (warningTimer) return;
-    if (!downloadWarning.classList.contains('visible')) {
-        downloadWarning.classList.add('visible');
-    } else {
-        downloadWarning.classList.remove('visible');
-        void downloadWarning.offsetWidth;
-        downloadWarning.classList.add('visible');
+/** Загружает и внедряет динамический контент выбранной страницы без перезагрузки */
+async function handleHashChange() {
+    const hashPath = getHashPath();
+    updateActiveNav(hashPath);
+    
+    let targetUrl = hashPath === 'index' ? 'index.html' : `${hashPath}.html`;
+    
+    const mc = $('main-content');
+    if (mc) mc.style.opacity = '0';
+    
+    try {
+        const resp = await fetch(targetUrl);
+        if (!resp.ok) throw new Error('not found');
+        const html = await resp.text();
+        
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        const newContent = doc.querySelector('#main-content');
+        
+        if (mc && newContent) {
+            setTimeout(() => {
+                mc.className = newContent.className;
+                mc.style.cssText = newContent.style.cssText;
+                mc.innerHTML = newContent.innerHTML;
+                mc.style.opacity = '1';
+                document.title = doc.title;
+                applyLanguage();
+                updateGithubData();
+                initMiniGame();
+                window.scrollTo(0, 0);
+            }, 300);
+        }
+    } catch(e) {
+        if (mc) {
+            setTimeout(() => {
+                mc.innerHTML = `<div class="page-404"><div class="code">404</div><h2>${t('notFoundTitle')}</h2><p>${t('notFoundText')}</p></div>`;
+                mc.style.opacity = '1';
+            }, 300);
+        }
     }
-    warningTimer = setTimeout(() => { downloadWarning.classList.remove('visible'); warningTimer = null; }, 10000);
-    clearTimeout(toastTimer);
-    toast.classList.add('visible');
-    toastTimer = setTimeout(() => { toast.classList.remove('visible'); }, 6000);
-});
+}
 
-toast.addEventListener('click', () => {
-    document.getElementById('install-section').scrollIntoView({ behavior: 'smooth' });
-    toast.classList.remove('visible');
-    clearTimeout(toastTimer);
-});
+window.addEventListener('hashchange', handleHashChange);
+if (window.location.hash) {
+    handleHashChange();
+} else {
+    updateActiveNav('index');
+}
 
-// ===== ПАРСИНГ РЕЛИЗОВ =====
+/* ==========================================================================
+   5. GITHUB RELEASES & API (Загрузка данных релизов с GitHub API)
+   ========================================================================== */
 const CAT_EN = { 'Добавлено': 'Added', 'Изменено': 'Changed', 'Исправлено': 'Fixed', 'Удалено': 'Removed' };
 
+/** Парсит тексты релизов с разделением по категориям */
 function parseRelease(body) {
     if (!body) return null;
     const header = body.match(/##\s*\[(.+?)\]\s*-\s*(\d{4}-\d{2}-\d{2})/);
@@ -158,83 +213,92 @@ function parseRelease(body) {
     return categories.length ? { version: header[1], date: header[2], categories } : null;
 }
 
+/** Форматирует ISO дату под выбранный язык */
 function formatDate(iso, lang) {
     const [y, m, d] = iso.split('-');
     return lang === 'ru' ? `${d}.${m}.${y}` : `${m}/${d}/${y}`;
 }
 
-// ===== GITHUB API: СЧЁТЧИК + ССЫЛКА + ЧЕЙНДЖЛОГ =====
-(async function () {
-    const CACHE_KEY = 'whitemax-dl-cache', CACHE_TTL = 60000;
+/** Запрашивает статистику скачиваний и прямые ссылки с GitHub API */
+async function updateGithubData() {
+    const CACHE_KEY = 'whitemax-dl-cache', CACHE_TTL = 300000;
+    let cached;
     try {
-        const cached = JSON.parse(localStorage.getItem(CACHE_KEY) || 'null');
-        if (cached && Date.now() - cached.ts < CACHE_TTL) {
-            $('download-count-value').textContent = cached.total.toLocaleString();
-            if (cached.url) $('download-btn').href = cached.url;
-            if (cached.changelog) loadChangelog();
-            return;
-        }
+        cached = JSON.parse(localStorage.getItem(CACHE_KEY));
+    } catch (e) {
+        cached = null;
+    }
+    
+    if (cached && Date.now() - cached.ts < CACHE_TTL) {
+        if ($('download-count-value')) $('download-count-value').textContent = cached.total.toLocaleString();
+        if (cached.url && $('download-btn')) $('download-btn').href = cached.url;
+        if (cached.changelog) loadChangelog();
+        return;
+    }
+
+    try {
         const resp = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/releases?per_page=100`);
         if (!resp.ok) throw new Error('rate limited');
         const releases = await resp.json();
 
-        let total = 0;
-        let latestUrl = '';
-        let latestDate = '';
+        let total = 0, latestUrl = '', latestDate = '';
         const changelog = [];
 
-        // Ищем самый свежий релиз по дате из релизнота
         for (const r of releases) {
+            let apkUrl = '';
             for (const a of r.assets) {
                 if (a.name.endsWith('.apk') && !a.name.toLowerCase().includes('increased')) {
                     total += a.download_count;
+                    if (!apkUrl) apkUrl = a.browser_download_url;
                 }
             }
             const parsed = parseRelease(r.body);
             if (parsed) {
                 changelog.push(parsed);
-                // Берём первый же APK из этого релиза как кандидат
-                for (const a of r.assets) {
-                    if (a.name.endsWith('.apk') && !a.name.toLowerCase().includes('increased')) {
-                        if (!latestDate || new Date(parsed.date) > new Date(latestDate)) {
-                            latestDate = parsed.date;
-                            latestUrl = a.browser_download_url;
-                        }
-                        break;
-                    }
+                if (apkUrl && (!latestDate || new Date(parsed.date) > new Date(latestDate))) {
+                    latestDate = parsed.date;
+                    latestUrl = apkUrl;
                 }
             }
         }
-
-        // Сортировка чейнджлога по дате версии (от новых к старым)
         changelog.sort((a, b) => new Date(b.date) - new Date(a.date));
 
-        if (latestUrl) $('download-btn').href = latestUrl;
-
         localStorage.setItem(CACHE_KEY, JSON.stringify({ total, url: latestUrl, changelog, ts: Date.now() }));
-        $('download-count-value').textContent = total.toLocaleString();
+        if ($('download-count-value')) $('download-count-value').textContent = total.toLocaleString();
+        if (latestUrl && $('download-btn')) $('download-btn').href = latestUrl;
         loadChangelog();
     } catch (e) {
-        $('download-count-value').textContent = '—';
-        loadChangelog();
+        if (cached) {
+            cached.ts = Date.now();
+            localStorage.setItem(CACHE_KEY, JSON.stringify(cached));
+            
+            if ($('download-count-value')) $('download-count-value').textContent = cached.total.toLocaleString();
+            if (cached.url && $('download-btn')) $('download-btn').href = cached.url;
+            if (cached.changelog) loadChangelog();
+        } else {
+            if ($('download-count-value')) $('download-count-value').textContent = '—';
+            loadChangelog();
+        }
     }
-})();
+}
 
-// ===== ЧЕЙНДЖЛОГ =====
+/** Рендерит списки из изменений релизов */
 function loadChangelog() {
+    const clLabel = $('changelog-label'), clTitle = $('changelog-title'), clContent = $('changelog-content');
+    if (!clLabel) return;
     const cached = JSON.parse(localStorage.getItem('whitemax-dl-cache') || 'null');
     if (cached && cached.changelog && cached.changelog.length) {
         renderChangelog(cached.changelog);
         return;
     }
-    $('changelog-label').textContent = t('changelogLabel');
-    $('changelog-title').textContent = t('changelogTitle');
-    $('changelog-content').innerHTML = '<p class="description-text">Загрузка истории версий...</p>';
+    clLabel.textContent = t('changelogLabel');
+    if (clTitle) clTitle.textContent = t('changelogTitle');
+    if (clContent) clContent.innerHTML = '<p class="description-text">Не удалось загрузить историю версий.</p>';
 }
 
 function renderChangelog(changelog) {
-    $('changelog-label').textContent = t('changelogLabel');
-    $('changelog-title').textContent = t('changelogTitle');
+    const clLabel = $('changelog-label'), clTitle = $('changelog-title'), clContent = $('changelog-content');
+    if (!clLabel || !clTitle || !clContent) return;
     const badge = t('currentBadge');
     let h = '<div class="changelog-list">';
     changelog.forEach((v, i) => {
@@ -248,11 +312,13 @@ function renderChangelog(changelog) {
         h += '</div>';
     });
     h += '</div>';
-    $('changelog-content').innerHTML = h;
+    clContent.innerHTML = h;
 }
 
-// ===== ДЕСКТОП: ЧАСТИЦЫ + ГРАДИЕНТ =====
-if (!isTouch) {
+/* ==========================================================================
+   6. PARTICLES ENGINE (Движок фоновых частиц Canvas / CSS)
+   ========================================================================== */
+if (!isTouch && $('particles-canvas')) {
     const canvas = $('particles-canvas'), ctx = canvas.getContext('2d');
     const PC = 100, CR = 400, RF = 0.65;
     const particles = Array.from({ length: PC }, () => new Particle());
@@ -260,9 +326,6 @@ if (!isTouch) {
     let glowOpacity = 1, isRising = false, riseStartOpacity = 1, riseStartTime = 0;
     let lastActivity = performance.now(), isFading = false;
     const INACTIVITY_DELAY = 3000, FADE_DURATION = 10000, RISE_DURATION = 2000;
-    const gradientBg = $('gradient-bg');
-
-    gradientBg.style.setProperty('--mx', '50%'); gradientBg.style.setProperty('--my', '50%'); gradientBg.style.setProperty('--go', '1');
 
     function Particle() {
         this.homeX = Math.random() * innerWidth; this.homeY = Math.random() * innerHeight;
@@ -281,9 +344,9 @@ if (!isTouch) {
         }
         this.vx *= 0.92; this.vy *= 0.92; this.x += this.vx; this.y += this.vy;
     };
-    Particle.prototype.draw = function () {
+    Particle.prototype.draw = function (isLight) {
         ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        const light = document.body.classList.contains('light'), r = light ? 0 : 255;
+        const r = isLight ? 0 : 255;
         ctx.fillStyle = `rgba(${r},${r},${r},${this.cOp})`; ctx.fill();
     };
 
@@ -299,6 +362,10 @@ if (!isTouch) {
     addEventListener('click', resetActivity); addEventListener('scroll', resetActivity, { passive: true }); addEventListener('keydown', resetActivity);
 
     (function loop() {
+        if (document.hidden) {
+            requestAnimationFrame(loop);
+            return;
+        }
         currentX += (mouseX - currentX) * 0.07; currentY += (mouseY - currentY) * 0.07;
         const now = performance.now(), idle = now - lastActivity;
         if (isRising) {
@@ -307,18 +374,37 @@ if (!isTouch) {
             if (p >= 1) { glowOpacity = 1; isRising = false; isFading = false; }
         } else if (idle < INACTIVITY_DELAY) { glowOpacity = 1; isFading = false; }
         else { isFading = true; glowOpacity = 1 - Math.min((idle - INACTIVITY_DELAY) / FADE_DURATION, 1); }
-        gradientBg.style.setProperty('--mx', currentX + 'px');
-        gradientBg.style.setProperty('--my', currentY + 'px');
-        gradientBg.style.setProperty('--go', glowOpacity);
 
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        for (let i = 0; i < PC; i++) { particles[i].update(currentX, currentY); particles[i].draw(); }
+        const isLight = document.body.classList.contains('light');
+        
+        if (glowOpacity > 0.01) {
+            const rg = ctx.createRadialGradient(currentX, currentY, 0, currentX, currentY, 600);
+            if (isLight) {
+                rg.addColorStop(0, `rgba(0,0,0,${0.10 * glowOpacity})`);
+                rg.addColorStop(0.2, `rgba(0,0,0,${0.06 * glowOpacity})`);
+                rg.addColorStop(0.4, `rgba(0,0,0,${0.03 * glowOpacity})`);
+                rg.addColorStop(0.6, `rgba(0,0,0,${0.012 * glowOpacity})`);
+                rg.addColorStop(0.8, `rgba(0,0,0,${0.004 * glowOpacity})`);
+                rg.addColorStop(1, 'transparent');
+            } else {
+                rg.addColorStop(0, `rgba(255,255,255,${0.12 * glowOpacity})`);
+                rg.addColorStop(0.2, `rgba(255,255,255,${0.08 * glowOpacity})`);
+                rg.addColorStop(0.4, `rgba(255,255,255,${0.04 * glowOpacity})`);
+                rg.addColorStop(0.6, `rgba(255,255,255,${0.015 * glowOpacity})`);
+                rg.addColorStop(0.8, `rgba(255,255,255,${0.004 * glowOpacity})`);
+                rg.addColorStop(1, 'transparent');
+            }
+            ctx.fillStyle = rg;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+
+        for (let i = 0; i < PC; i++) { particles[i].update(currentX, currentY); particles[i].draw(isLight); }
         requestAnimationFrame(loop);
     })();
 }
 
-// ===== МОБИЛКИ: CSS-ЧАСТИЦЫ =====
-if (isTouch) {
+if (isTouch && $('particles-css')) {
     const container = $('particles-css'), N = 50, frag = document.createDocumentFragment();
     for (let i = 0; i < N; i++) {
         const dot = document.createElement('div');
@@ -334,28 +420,431 @@ function renderContent() {
     const lng = UI[currentLang];
     if (!lng) return;
 
-    let h = `<p class="description-text">${esc(lng.aboutDesc)}</p>`;
-    if (lng.features?.length) {
-        h += '<ul class="feature-list">';
-        lng.features.forEach(f => h += `<li>${esc(f)}</li>`);
-        h += '</ul>';
+    if ($('about-content')) {
+        let h = `<p class="description-text">${esc(lng.aboutDesc)}</p>`;
+        if (lng.features?.length) {
+            h += '<ul class="feature-list">';
+            lng.features.forEach(f => h += `<li>${esc(f)}</li>`);
+            h += '</ul>';
+        }
+        $('about-content').innerHTML = h;
     }
-    $('about-content').innerHTML = h;
 
-    if (lng.faq?.length) {
-        h = '<div class="faq-list">';
+    if (lng.faq?.length && $('faq-content')) {
+        let h = '<div class="faq-list">';
         lng.faq.forEach(q => h += `<div class="faq-item"><div class="faq-question">${esc(q.q)}</div><div class="faq-answer">${esc(q.a)}</div></div>`);
         h += '</div>';
         $('faq-content').innerHTML = h;
-        $('faq-content').querySelectorAll('.faq-question').forEach(q => {
-            q.addEventListener('click', () => {
-                const item = q.parentElement, open = item.classList.contains('open');
-                $('faq-content').querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
-                if (!open) item.classList.add('open');
-            });
-        });
     }
 }
 
-// ===== СТАРТ =====
+// Функция копирования почты
+window.copyEmail = function(e, email) {
+    navigator.clipboard.writeText(email);
+    const x = e.clientX;
+    const y = e.clientY;
+    const toast = document.createElement('div');
+    toast.textContent = (typeof currentLang !== 'undefined' && currentLang === 'en') ? 'Copied!' : 'Скопировано!';
+    toast.style.cssText = `position:fixed; left:${x}px; top:${y-20}px; background:rgba(30,30,30,0.9); border:1px solid rgba(255,255,255,0.1); color:#fff; padding:6px 12px; border-radius:8px; font-family:'DM Sans', sans-serif; font-size:12px; font-weight:500; pointer-events:none; z-index:9999; transform:translate(-50%, 0); transition:all 1s ease; opacity:1; box-shadow:0 4px 12px rgba(0,0,0,0.5); backdrop-filter:blur(4px);`;
+    document.body.appendChild(toast);
+    
+    // Плавное уплывание вверх
+    requestAnimationFrame(() => {
+        setTimeout(() => {
+            toast.style.transform = 'translate(-50%, -40px)';
+            toast.style.opacity = '0';
+        }, 50);
+    });
+    
+    setTimeout(() => toast.remove(), 1050);
+};
+
+// Запуск при загрузке
+updateActiveNav();
 applyLanguage();
+if ($('minigame-container')) initMiniGame();
+loadChangelog();
+updateGithubData();
+
+// ===== HASH ROUTER =====
+function getHashPath() {
+    const hash = window.location.hash.replace('#', '');
+    return hash || 'index';
+}
+
+function updateActiveNav(hashPath) {
+    document.querySelectorAll('.nav-link, .spa-link').forEach(n => {
+        let href = n.getAttribute('href');
+        if (href) href = href.replace('#', '');
+        if (!href || href === '/') href = 'index';
+        
+        if (href === hashPath) {
+            n.classList.add('active');
+        } else {
+            n.classList.remove('active');
+        }
+    });
+}
+
+async function handleHashChange() {
+    const hashPath = getHashPath();
+    updateActiveNav(hashPath);
+    
+    let targetUrl = hashPath === 'index' ? 'index.html' : `${hashPath}.html`;
+    
+    const mc = $('main-content');
+    if (mc) mc.style.opacity = '0';
+    
+    try {
+        const resp = await fetch(targetUrl);
+        if (!resp.ok) throw new Error('not found');
+        const html = await resp.text();
+        
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        const newContent = doc.querySelector('#main-content');
+        
+        if (mc && newContent) {
+            setTimeout(() => {
+                mc.className = newContent.className;
+                mc.style.cssText = newContent.style.cssText;
+                mc.innerHTML = newContent.innerHTML;
+                mc.style.opacity = '1';
+                document.title = doc.title;
+                applyLanguage();
+                updateGithubData();
+                initMiniGame();
+                window.scrollTo(0, 0); // Прокрутка наверх при переходе
+            }, 300);
+        }
+    } catch(e) {
+        if (mc) {
+            setTimeout(() => {
+                mc.innerHTML = `<div class="page-404"><div class="code">404</div><h2>${t('notFoundTitle')}</h2><p>${t('notFoundText')}</p></div>`;
+                mc.style.opacity = '1';
+            }, 300);
+        }
+    }
+}
+
+window.addEventListener('hashchange', handleHashChange);
+
+if (window.location.hash) {
+    handleHashChange();
+} else {
+    updateActiveNav('index');
+}
+
+// ===== МИНИ-ИГРА (Dino-клон) =====
+let gameLoop = null;
+function initMiniGame() {
+    const canvas = $('minigame-canvas');
+    const container = $('minigame-container');
+    const trigger = $('floating-cubosaur');
+    if (!canvas || !container) {
+        if (gameLoop) { cancelAnimationFrame(gameLoop); gameLoop = null; }
+        return;
+    }
+    
+    let isCaught = false;
+    if (trigger && !trigger.dataset.bound) {
+        trigger.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (isCaught) return;
+            isCaught = true;
+            trigger.classList.add('is-flying');
+            
+            // 1. Показываем контейнер и принудительно рассчитываем геометрию открытого состояния
+            container.style.transition = 'none';
+            container.style.display = 'block';
+            container.style.maxHeight = '400px';
+            container.style.opacity = '1';
+            container.style.marginTop = '48px';
+            void container.offsetHeight; // Force reflow
+
+            // 2. Отключаем CSS smooth scroll на время полета
+            const originalScrollBehavior = document.documentElement.style.scrollBehavior;
+            document.documentElement.style.scrollBehavior = 'auto';
+
+            // 3. Точные неискаженные начальные координаты кубозаврика в документе
+            const startScrollY = window.scrollY;
+            const startDocX = cx + window.scrollX;
+            const startDocY = cy + startScrollY;
+            const startRot = crot;
+
+            // 4. Точные координаты центра персонажа Дино в открытом холсте
+            const canvasRect = canvas.getBoundingClientRect();
+            const targetDocX = canvasRect.left + window.scrollX + (canvasRect.width * (60 / 600)) - 4.5;
+            const targetDocY = canvasRect.top + window.scrollY + (canvasRect.height * (110 / 150)) - 4.5;
+            
+            // Максимально возможный скролл страницы
+            const maxScrollY = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+            const targetScrollY = Math.min(maxScrollY, Math.max(0, targetDocY - (window.innerHeight / 2)));
+            
+            // Восстанавливаем плавность opacity контейнера
+            container.style.transition = 'opacity 0.6s ease';
+
+            // Переводим в absolute с точным совпадением с cx/cy
+            trigger.style.transition = 'none';
+            trigger.style.position = 'absolute';
+            trigger.style.left = startDocX + 'px';
+            trigger.style.top = startDocY + 'px';
+            trigger.style.margin = '0';
+            
+            const DURATION = 2000;
+            const startTime = performance.now();
+            
+            function flyAndFollow(now) {
+                const elapsed = now - startTime;
+                const p = Math.min(elapsed / DURATION, 1);
+                
+                // Плавная easing-функция (easeInOutCubic)
+                const easeP = p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2;
+                
+                // Вычисляем текущую позицию кубика в документе
+                const currX = startDocX + (targetDocX - startDocX) * easeP;
+                const currY = startDocY + (targetDocY - startDocY) * easeP;
+                
+                trigger.style.left = currX + 'px';
+                trigger.style.top = currY + 'px';
+                trigger.style.transform = `rotate(${startRot + easeP * 1440}deg) scale(${1 + easeP * 0.6})`;
+                
+                // Затухание под конец полета (последние 15% времени)
+                if (p > 0.85) {
+                    trigger.style.opacity = (1 - (p - 0.85) / 0.15).toFixed(2);
+                }
+                
+                // Плавное движение камеры от НАЧАЛЬНОЙ позиции скролла к ФИНАЛЬНОЙ
+                const currScrollY = startScrollY + (targetScrollY - startScrollY) * easeP;
+                window.scrollTo(0, currScrollY);
+                
+                if (p < 1) {
+                    requestAnimationFrame(flyAndFollow);
+                } else {
+                    trigger.style.display = 'none';
+                    document.documentElement.style.scrollBehavior = originalScrollBehavior;
+                }
+            }
+            requestAnimationFrame(flyAndFollow);
+        });
+        trigger.dataset.bound = "true";
+
+        // Логика отталкивания кубозаврика от курсора
+        let cx = Math.random() * (innerWidth - 40) + 20;
+        let cy = Math.random() * (innerHeight - 40) + 20;
+        let cvx = 0;
+        let cvy = 0;
+        let crot = 0;
+        let cMouseX = innerWidth / 2;
+        let cMouseY = innerHeight / 2;
+
+        function updatePointer(e) {
+            if (e.touches && e.touches.length > 0) {
+                cMouseX = e.touches[0].clientX;
+                cMouseY = e.touches[0].clientY;
+            } else if (e.clientX !== undefined) {
+                cMouseX = e.clientX;
+                cMouseY = e.clientY;
+            }
+        }
+
+        window.addEventListener('mousemove', updatePointer);
+        window.addEventListener('touchmove', updatePointer, { passive: true });
+        window.addEventListener('touchstart', updatePointer, { passive: true });
+
+        trigger.addEventListener('touchstart', () => {
+            if (!isCaught) trigger.click();
+        }, { passive: true });
+
+        function animateCubosaur() {
+            if (isCaught || trigger.style.display === 'none') return;
+            
+            const dx = cx - cMouseX;
+            const dy = cy - cMouseY;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            const maxDist = innerWidth < 600 ? 140 : 280;
+            if (dist < maxDist && dist > 0) {
+                const f = (maxDist - dist) / maxDist;
+                const angle = Math.atan2(dy, dx);
+                const pushForce = innerWidth < 600 ? 0.28 : 0.20;
+                cvx += Math.cos(angle) * f * pushForce; 
+                cvy += Math.sin(angle) * f * pushForce;
+            }
+            
+            // Трение
+            cvx *= 0.91;
+            cvy *= 0.91;
+
+            // Мягкое отталкивание от краев экрана
+            if (cx <= 20) cvx += 0.15;
+            if (cx >= innerWidth - 20) cvx -= 0.15;
+            if (cy <= 20) cvy += 0.15;
+            if (cy >= innerHeight - 20) cvy -= 0.15;
+
+            cx += cvx;
+            cy += cvy;
+            
+            // Вращение в зависимости от скорости по X
+            crot += cvx * 3;
+
+            trigger.style.left = cx + 'px';
+            trigger.style.top = cy + 'px';
+            trigger.style.transform = `rotate(${crot}deg)`;
+            
+            requestAnimationFrame(animateCubosaur);
+        }
+        requestAnimationFrame(animateCubosaur);
+    }
+    
+    const ctx = canvas.getContext('2d');
+    let dino = { x: 50, y: 100, w: 20, h: 20, dy: 0, gravity: 0.55, jump: -8.5, grounded: true };
+    let obstacles = [];
+    let score = 0;
+    let highscore = localStorage.getItem('whitemax-game-highscore') || 0;
+    $('minigame-highscore').textContent = highscore;
+    let frame = 0;
+    let playing = false;
+    let gameOver = false;
+
+    function reset() {
+        dino.y = 100; dino.dy = 0; dino.grounded = true;
+        obstacles = []; score = 0; frame = 0;
+        $('minigame-score').textContent = score;
+        gameOver = false;
+    }
+
+    function doJump(e) {
+        if (e && e.type !== 'keydown') e.preventDefault();
+        if (e && e.type === 'keydown' && e.code !== 'Space') return;
+        
+        if (gameOver) {
+            reset();
+            playing = true;
+        } else if (!playing) {
+            playing = true;
+        }
+        
+        if (dino.grounded) {
+            dino.dy = dino.jump;
+            dino.grounded = false;
+        }
+    }
+
+    if (!canvas.dataset.bound) {
+        canvas.addEventListener('mousedown', doJump);
+        canvas.addEventListener('touchstart', doJump, {passive: false});
+        canvas.dataset.bound = "true";
+    }
+
+    if (!window.minigameKeydownBound) {
+        window.addEventListener('keydown', (e) => {
+            if (document.activeElement.tagName !== 'INPUT' && $('minigame-canvas')) {
+                if (e.code === 'Space') { 
+                    e.preventDefault(); 
+                    // trigger click to simulate jump on current canvas
+                    $('minigame-canvas').dispatchEvent(new Event('mousedown'));
+                }
+            }
+        });
+        window.minigameKeydownBound = true;
+    }
+
+    function update() {
+        if (!playing) return;
+        
+        dino.dy += dino.gravity;
+        dino.y += dino.dy;
+        if (dino.y + dino.h > 120) {
+            dino.y = 120 - dino.h;
+            dino.dy = 0;
+            dino.grounded = true;
+        }
+
+        if (frame % 100 === 0) {
+            obstacles.push({ x: canvas.width, w: 15, h: 15 + Math.random() * 25 });
+        }
+
+        for (let i = 0; i < obstacles.length; i++) {
+            let obs = obstacles[i];
+            obs.x -= 3.8 + (score * 0.04); // баланс ускорения
+            
+            if (
+                dino.x < obs.x + obs.w &&
+                dino.x + dino.w > obs.x &&
+                dino.y < 120 &&
+                dino.y + dino.h > 120 - obs.h
+            ) {
+                gameOver = true;
+                playing = false;
+                if (score > highscore) {
+                    highscore = score;
+                    localStorage.setItem('whitemax-game-highscore', highscore);
+                    $('minigame-highscore').textContent = highscore;
+                }
+            }
+        }
+        
+        if (obstacles.length && obstacles[0].x < -20) {
+            obstacles.shift();
+            score++;
+            $('minigame-score').textContent = score;
+        }
+        
+        frame++;
+    }
+
+    function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        ctx.fillStyle = 'rgba(255,255,255,0.1)';
+        ctx.fillRect(0, 120, canvas.width, 2);
+
+        if (!playing && !gameOver) {
+            ctx.fillStyle = '#888';
+            ctx.font = '500 15px "Inter", sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText(currentLang === 'en' ? 'Click or Space to start' : 'Кликни или нажми пробел', canvas.width/2, 60);
+        } else if (gameOver) {
+            ctx.fillStyle = '#ff4444';
+            ctx.font = 'bold 22px "DM Sans", sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('GAME OVER', canvas.width/2, 60);
+            ctx.fillStyle = '#888';
+            ctx.font = '500 15px "Inter", sans-serif';
+            ctx.fillText(currentLang === 'en' ? 'Click to restart' : 'Кликни для рестарта', canvas.width/2, 85);
+        }
+
+        // Dino with glow
+        ctx.shadowBlur = 15;
+        ctx.shadowColor = gameOver ? '#ff4444' : '#fff';
+        ctx.fillStyle = gameOver ? '#ff4444' : '#fff';
+        ctx.fillRect(dino.x, dino.y, dino.w, dino.h);
+        ctx.shadowBlur = 0; // reset for obstacles
+
+        ctx.fillStyle = '#888';
+        for (let obs of obstacles) {
+            ctx.fillRect(obs.x, 120 - obs.h, obs.w, obs.h);
+        }
+    }
+
+    function loop() {
+        if ($('minigame-canvas') !== canvas || document.hidden) {
+            requestAnimationFrame(loop);
+            return;
+        }
+        
+        if (playing || gameOver) {
+            update();
+            draw();
+        }
+        requestAnimationFrame(loop);
+    }
+    draw(); // первичный статический рисунок
+    
+    if (!canvas.dataset.looping) {
+        loop();
+        canvas.dataset.looping = "true";
+    }
+}
+// Запускаем на первой загрузке
+initMiniGame();

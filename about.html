@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhiteMAX — О проекте</title>
+    <link rel="icon" type="image/png" href="images/favicon.png">
+    <link rel="apple-touch-icon" href="images/favicon.png">
+    <meta name="description" content="Подробнее о проекте WhiteMAX.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" as="style">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <!-- Umami Analytics -->
+    <script defer src="https://cloud.umami.is/script.js" data-website-id="fb1a95b8-6b96-44a8-90bb-e0a8118e8684"></script>
+</head>
+<body>
+
+    <!-- Верхняя панель: Навигация слева | EN + Тема справа -->
+    <nav class="top-nav">
+        <div class="nav-brand-wrapper">
+            <a href="#" class="nav-link home-link" data-ru="WhiteMAX" data-en="WhiteMAX">WhiteMAX</a>
+            <span class="site-version" data-ru="Версия сайта: 2.0.0" data-en="Site version: 2.0.0">Версия сайта: 2.0.0</span>
+        </div>
+        <a href="#download" class="nav-link" data-ru="Скачать" data-en="Download">Скачать</a>
+        <a href="#contacts" class="nav-link" data-ru="Контакты" data-en="Contacts">Контакты</a>
+        <a href="#about" class="nav-link" data-ru="О проекте" data-en="About">О проекте</a>
+    </nav>
+    <div class="top-bar">
+        <button class="lang-toggle" id="lang-toggle" aria-label="Сменить язык">EN</button>
+        <button class="theme-toggle" id="theme-toggle" aria-label="Переключить тему" title="Сменить тему">◐</button>
+    </div>
+
+    <!-- Анимированный фон (оставляем для красоты) -->
+    <div class="gradient-bg" id="gradient-bg"></div>
+    <div class="particles-css" id="particles-css"></div>
+    <canvas id="particles-canvas" class="particles-canvas"></canvas>
+
+    <!-- Основной контент страницы -->
+    <div class="container" id="main-content" style="margin-top: 60px; text-align: center;">
+        <section id="about-section">
+            <p class="section-label" data-ru="О проекте" data-en="About">О проекте</p>
+            <div class="section-icon">◈</div>
+            <h2 class="section-title" data-ru="Что такое WhiteMAX?" data-en="What is WhiteMAX?">Что такое WhiteMAX?</h2>
+            
+            <!-- Описание -->
+            <p class="description-text" style="max-width: 600px; margin: 0 auto 36px;" data-ru="WhiteMAX (ВайтМАКС) — это бесплатная независимая модификация российского мессенджера MAX (МАКС), созданная с единственной целью: вернуть пользователю контроль над своей приватностью." data-en="WhiteMAX is a free independent modification of the MAX messenger created with a single goal: to return control over privacy back to the user.">
+                WhiteMAX (ВайтМАКС) — это бесплатная независимая модификация российского мессенджера MAX (МАКС), созданная с единственной целью: вернуть пользователю контроль над своей приватностью.
+            </p>
+
+            <!-- Карточки Q&A -->
+            <div style="max-width: 650px; margin: 0 auto 32px;">
+                <div class="info-card" style="text-align: center;">
+                    <h3 data-ru="Что меняет WhiteMAX?" data-en="What does WhiteMAX change?">Что меняет WhiteMAX?</h3>
+                    <p data-ru="Только работу трекеров активности. Данные о том, куда кликаешь, больше не уходят." data-en="Only activity trackers. Data about where you click is no longer sent.">
+                        Только работу трекеров активности. Данные о том, куда кликаешь, больше не уходят.
+                    </p>
+                </div>
+                
+                <div class="info-card" style="text-align: center;">
+                    <h3 data-ru="Что нового даёт WhiteMAX?" data-en="What's new in WhiteMAX?">Что нового даёт WhiteMAX?</h3>
+                    <p data-ru="Разблокированное меню разработчика и дополнительные функции защиты приватности." data-en="Unlocked developer menu and additional privacy features.">
+                        Разблокированное меню разработчика и дополнительные функции защиты приватности.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Строка о философии без кавычек и italic -->
+            <div class="about-quote" style="max-width: 650px; margin: 0 auto 36px; text-align: center; font-style: normal;" data-ru="WhiteMAX стремится к минимуму изменений, сохраняя привычный пользовательский опыт и оригинальный интерфейс." data-en="WhiteMAX strives for minimal changes, preserving the familiar user experience and original interface.">
+                WhiteMAX стремится к минимуму изменений, сохраняя привычный пользовательский опыт и оригинальный интерфейс.
+            </div>
+
+            <!-- Факты в цифрах -->
+            <h3 style="font-size: 1.25rem; color: #fff; margin-bottom: 20px; font-weight: 700;" data-ru="Проект в цифрах" data-en="Project in numbers">Проект в цифрах</h3>
+            <div style="max-width: 650px; margin: 0 auto 40px; display: grid; grid-template-columns: repeat(auto-fit, minmax(135px, 1fr)); gap: 14px;">
+                <div class="stat-card">
+                    <div class="stat-value" style="font-size: 1.5rem; white-space: nowrap;">100 000+</div>
+                    <div class="stat-label" data-ru="Скачиваний" data-en="Downloads">Скачиваний</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" style="font-size: 1.5rem; white-space: nowrap;">30 000+</div>
+                    <div class="stat-label" data-ru="Подписчиков в Telegram" data-en="Telegram Subscribers">Подписчиков в Telegram</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" style="font-size: 1.5rem; white-space: nowrap;">500+</div>
+                    <div class="stat-label" data-ru="Звёзд на GitHub" data-en="GitHub Stars">Звёзд на GitHub</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" style="font-size: 1.5rem; white-space: nowrap;">1</div>
+                    <div class="stat-label" data-ru="Разработчик" data-en="Developer">Разработчик</div>
+                </div>
+            </div>
+
+            <!-- Предупреждение / Дисклеймер -->
+            <div class="warning-card" style="max-width: 650px; margin: 0 auto 20px; text-align: center;">
+                <h4 style="justify-content: center;" data-ru="Важная информация" data-en="Important information">
+                    Важная информация
+                </h4>
+                <p data-ru="WhiteMAX является неофициальной модификацией. Проект создаётся одним энтузиастом, не монетизируется и не претендует на авторское право правообладателя." data-en="WhiteMAX is an unofficial modification. The project is created by a single enthusiast, is not monetized, and does not claim copyright of the rights holder.">
+                    WhiteMAX является неофициальной модификацией. Проект создаётся одним энтузиастом, не монетизируется и не претендует на авторское право правообладателя.
+                </p>
+                <p data-ru="Поскольку эта модификация неофициальная, в редких случаях она может приводить к блокировке аккаунта, поэтому использование мода — на страх и риск пользователя." data-en="Since this modification is unofficial, in rare cases it may lead to account suspension, so using the mod is at the user's own risk.">
+                    Поскольку эта модификация неофициальная, в редких случаях она может приводить к блокировке аккаунта, поэтому использование мода — на страх и риск пользователя.
+                </p>
+            </div>
+        </section>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

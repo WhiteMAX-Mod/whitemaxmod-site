@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhiteMAX — Контакты</title>
+    <link rel="icon" type="image/png" href="images/favicon.png">
+    <link rel="apple-touch-icon" href="images/favicon.png">
+    <meta name="description" content="Контакты проекта WhiteMAX.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" as="style">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <!-- Umami Analytics -->
+    <script defer src="https://cloud.umami.is/script.js" data-website-id="fb1a95b8-6b96-44a8-90bb-e0a8118e8684"></script>
+</head>
+<body>
+
+    <nav class="top-nav">
+        <div class="nav-brand-wrapper">
+            <a href="#" class="nav-link home-link" data-ru="WhiteMAX" data-en="WhiteMAX">WhiteMAX</a>
+            <span class="site-version" data-ru="Версия сайта: 2.0.0" data-en="Site version: 2.0.0">Версия сайта: 2.0.0</span>
+        </div>
+        <a href="#download" class="nav-link" data-ru="Скачать" data-en="Download">Скачать</a>
+        <a href="#contacts" class="nav-link" data-ru="Контакты" data-en="Contacts">Контакты</a>
+        <a href="#about" class="nav-link" data-ru="О проекте" data-en="About">О проекте</a>
+    </nav>
+    <div class="top-bar">
+        <button class="lang-toggle" id="lang-toggle" aria-label="Сменить язык">EN</button>
+        <button class="theme-toggle" id="theme-toggle" aria-label="Переключить тему" title="Сменить тему">◐</button>
+    </div>
+
+    <div class="gradient-bg" id="gradient-bg"></div>
+    <div class="particles-css" id="particles-css"></div>
+    <canvas id="particles-canvas" class="particles-canvas"></canvas>
+
+    <div class="container" id="main-content" style="margin-top: 100px; text-align: left;">
+        <h1 class="title" style="font-size: 2.5rem; text-align: center; margin-bottom: 1rem;" data-ru="Контакты" data-en="Contacts">Контакты</h1>
+        <p class="description-text" style="font-size: 1.1rem; text-align: center; margin-bottom: 2rem;" data-ru="Мы всегда открыты для предложений, баг-репортов и сотрудничества." data-en="We are always open to suggestions, bug reports, and cooperation.">Мы всегда открыты для предложений, баг-репортов и сотрудничества.</p>
+        
+        <div style="text-align: center; max-width: 500px; margin: 0 auto; display: flex; flex-direction: column; gap: 24px;">
+            <div class="actions-row">
+                <a href="https://t.me/whitemaxmod" class="btn" target="_blank" rel="noopener" style="flex: 1;">Telegram</a>
+                <a href="https://github.com/WhiteMAX-Mod/whitemaxmod" class="btn" target="_blank" rel="noopener" style="flex: 1;">GitHub</a>
+                <a href="https://www.tiktok.com/@whitemaxmod" class="btn" target="_blank" rel="noopener" style="flex: 1;">TikTok</a>
+            </div>
+            
+            <div style="background: rgba(255,255,255,0.02); border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); padding: 24px;">
+                <h3 style="font-size: 1.2rem; font-weight: 600; margin-bottom: 16px; color: #fff;" data-ru="Электронная почта" data-en="Email">Электронная почта</h3>
+                <div class="actions-row" style="flex-direction: column; gap: 12px;">
+                    <a href="javascript:void(0)" onclick="copyEmail(event, 'main@whitemaxmod.com')" class="btn" style="width: 100%; justify-content: space-between;"><span data-ru="Основная почта" data-en="Main email">Основная почта</span> <span style="color:#aaa; font-weight: 500;">main@whitemaxmod.com</span></a>
+                    <a href="javascript:void(0)" onclick="copyEmail(event, 'support@whitemaxmod.com')" class="btn" style="width: 100%; justify-content: space-between;"><span data-ru="Тех. поддержка" data-en="Tech support">Тех. поддержка</span> <span style="color:#aaa; font-weight: 500;">support@whitemaxmod.com</span></a>
+                    <a href="javascript:void(0)" onclick="copyEmail(event, 'legal@whitemaxmod.com')" class="btn" style="width: 100%; justify-content: space-between;"><span data-ru="Юристам" data-en="Legal">Юристам</span> <span style="color:#aaa; font-weight: 500;">legal@whitemaxmod.com</span></a>
+                    <a href="javascript:void(0)" onclick="copyEmail(event, 'media@whitemaxmod.com')" class="btn" style="width: 100%; justify-content: space-between;"><span data-ru="СМИ" data-en="Media">СМИ</span> <span style="color:#aaa; font-weight: 500;">media@whitemaxmod.com</span></a>
+                    <a href="javascript:void(0)" onclick="copyEmail(event, 'partner@whitemaxmod.com')" class="btn" style="width: 100%; justify-content: space-between;"><span data-ru="Партнёрам" data-en="Partners">Партнёрам</span> <span style="color:#aaa; font-weight: 500;">partner@whitemaxmod.com</span></a>
+                    <a href="javascript:void(0)" onclick="copyEmail(event, 'community@whitemaxmod.com')" class="btn" style="width: 100%; justify-content: space-between;"><span data-ru="Сообществу" data-en="Community">Сообществу</span> <span style="color:#aaa; font-weight: 500;">community@whitemaxmod.com</span></a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
