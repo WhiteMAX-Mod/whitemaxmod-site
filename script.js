@@ -430,7 +430,9 @@ updateGithubData();
 // ===== HASH ROUTER =====
 function getHashPath() {
     const hash = window.location.hash.replace('#', '');
-    return hash || 'index';
+    if (hash) return hash;
+    const path = window.location.pathname.replace(/^\//, '').replace(/\.html$/, '');
+    return path || 'index';
 }
 
 function updateActiveNav(hashPath) {
@@ -445,6 +447,42 @@ function updateActiveNav(hashPath) {
             n.classList.remove('active');
         }
     });
+}
+
+function updatePageMeta(hashPath, doc) {
+    if (!doc) return;
+    const titleText = doc.title || 'WhiteMAX';
+    const metaDesc = doc.querySelector('meta[name="description"]');
+    const descText = metaDesc ? metaDesc.getAttribute('content') : '';
+
+    document.title = titleText;
+
+    let pageDesc = document.querySelector('meta[name="description"]');
+    if (!pageDesc) {
+        pageDesc = document.createElement('meta');
+        pageDesc.name = 'description';
+        document.head.appendChild(pageDesc);
+    }
+    if (descText) pageDesc.content = descText;
+
+    let ogTitle = document.querySelector('meta[property="og:title"]');
+    if (ogTitle) ogTitle.content = titleText;
+
+    let ogDesc = document.querySelector('meta[property="og:description"]');
+    if (ogDesc && descText) ogDesc.content = descText;
+
+    let ogUrl = document.querySelector('meta[property="og:url"]');
+    if (ogUrl) {
+        ogUrl.content = hashPath === 'index' ? 'https://whitemaxmod.com/' : `https://whitemaxmod.com/#${hashPath}`;
+    }
+
+    let canonical = document.querySelector('link[rel="canonical"]');
+    if (!canonical) {
+        canonical = document.createElement('link');
+        canonical.rel = 'canonical';
+        document.head.appendChild(canonical);
+    }
+    canonical.href = hashPath === 'index' ? 'https://whitemaxmod.com/' : `https://whitemaxmod.com/#${hashPath}`;
 }
 
 async function handleHashChange() {
@@ -471,7 +509,7 @@ async function handleHashChange() {
                 mc.style.cssText = newContent.style.cssText;
                 mc.innerHTML = newContent.innerHTML;
                 mc.style.opacity = '1';
-                document.title = doc.title;
+                updatePageMeta(hashPath, doc);
                 applyLanguage();
                 updateGithubData();
                 initMiniGame();
@@ -490,7 +528,8 @@ async function handleHashChange() {
 
 window.addEventListener('hashchange', handleHashChange);
 
-if (window.location.hash) {
+const initialPath = getHashPath();
+if (window.location.hash || initialPath !== 'index') {
     handleHashChange();
 } else {
     updateActiveNav('index');
