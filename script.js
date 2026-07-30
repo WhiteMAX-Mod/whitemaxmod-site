@@ -489,6 +489,12 @@ async function handleHashChange() {
     const hashPath = getHashPath();
     updateActiveNav(hashPath);
     
+    // Принудительно чистим pathname (например /download.html#contacts -> /#contacts)
+    if (window.location.pathname !== '/' && window.location.pathname !== '/index.html' && window.location.pathname !== '') {
+        const cleanHash = hashPath === 'index' ? '#' : `#${hashPath}`;
+        history.replaceState(null, '', `/${cleanHash}`);
+    }
+    
     let targetUrl = hashPath === 'index' ? 'index.html' : `${hashPath}.html`;
     
     const mc = $('main-content');
