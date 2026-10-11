@@ -87,7 +87,7 @@ body.light .contact-toggle:hover{
 /* Плавные переходы */
 .gradient-bg,.gradient-bg::after,.grid-overlay,.particle-dot,
 .logo-text,.logo-text span,.logo-icon-fallback,.tagline,
-.btn,.btn-primary,.btn-support,.agreement-text,.agreement-text a,.download-warning,
+.btn,.btn-primary,.btn-support,.agreement-text,.agreement-text a,.download-warning,.btn-version,
 .section-label,.section-title,.section-icon,.description-text,
 .feature-list li,.feature-list li::before,.faq-question,.faq-question::after,
 .faq-answer,.changelog-version,.changelog-date,.changelog-changes li,.changelog-changes li::before,
@@ -262,8 +262,22 @@ body.light .logo-icon-wrapper{filter:drop-shadow(0 16px 40px rgba(0,0,0,.08))}
 .actions{display:flex;flex-direction:column;align-items:center;gap:18px;margin-top:40px}
 .actions-row{display:flex;flex-wrap:wrap;gap:11px;justify-content:center}
 .download-wrapper{display:flex;flex-direction:column;align-items:center;width:100%}
-.download-count{font-size:13px;color:#888;margin-top:6px;display:flex;align-items:center;gap:6px;justify-content:center}
+.download-count{font-size:13px;color:#888;margin-top:8px;display:flex;align-items:center;gap:6px;justify-content:center}
 .download-count span{color:#aaa;font-weight:600}
+.btn-version{
+    font-size:11px;
+    font-weight:500;
+    opacity:.6;
+    letter-spacing:.2px;
+    line-height:1.2;
+    display:inline-flex;
+    align-items:center;
+    gap:4px;
+    color:inherit;
+}
+body.light .btn-version{
+    opacity:.7;
+}
 .btn{
     display:inline-flex;align-items:center;justify-content:center;gap:9px;
     padding:15.4px 31px;border-radius:50px;font-size:16.5px;font-weight:600;
@@ -272,7 +286,11 @@ body.light .logo-icon-wrapper{filter:drop-shadow(0 16px 40px rgba(0,0,0,.08))}
     backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
 }
 .btn:hover{background:rgba(255,255,255,.1);color:#fff;transform:translateY(-2px);box-shadow:0 4px 16px rgba(255,255,255,.06)}
-.btn-primary{background:#fff;color:#1a1a1a;box-shadow:0 4px 26px rgba(255,255,255,.2);padding:17.6px 44px;font-size:17.6px;white-space:nowrap}
+.btn-primary{
+    display:inline-flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+    background:#fff;color:#1a1a1a;box-shadow:0 4px 26px rgba(255,255,255,.2);padding:12px 44px 11px;font-size:17.6px;white-space:nowrap;
+}
+.btn-primary .btn-text{font-size:17.6px;font-weight:600;line-height:1.2}
 .btn-primary:hover{background:#f0f0f0;color:#1a1a1a;box-shadow:0 8px 38px rgba(255,255,255,.35);transform:translateY(-3px)}
 .btn-support{color:#888;font-size:14.3px;padding:11px 24px}
 .btn-support:hover{color:#aaa;transform:translateY(-1px)}
@@ -369,7 +387,9 @@ footer .disclaimer{color:#444;font-size:13.2px}
     .actions{margin-top:32px;gap:14px}
     .actions-row{gap:8px}
     .btn{padding:13px 24px;font-size:15px}
-    .btn-primary{padding:16px 36px;font-size:17px}
+    .btn-primary{padding:11px 36px 10px;font-size:16.5px}
+    .btn-primary .btn-text{font-size:16.5px;font-weight:600}
+    .btn-version{font-size:10.5px}
     .btn-support{font-size:13px;padding:10px 20px}
     .agreement-text{max-width:280px;font-size:11px;margin-top:6px}
     .download-warning{max-width:300px;font-size:12px;line-height:1.5}
@@ -419,7 +439,9 @@ footer .disclaimer{color:#444;font-size:13.2px}
     .logo-text{font-size:30px}
     .tagline{font-size:14px;max-width:260px}
     .btn{padding:11px 20px;font-size:14px}
-    .btn-primary{padding:14px 30px;font-size:16px}
+    .btn-primary{padding:10px 22px 9px;font-size:15px}
+    .btn-primary .btn-text{font-size:15px;font-weight:600}
+    .btn-version{font-size:10px}
     .actions-row{gap:6px}
     .agreement-text{max-width:240px;font-size:10px}
     .download-warning{max-width:260px;font-size:11px}

@@ -189,10 +189,18 @@ async function updateGithubData() {
     } catch (e) {
         cached = null;
     }
+
+    function applyCachedOrData(total, ver, url) {
+        if (total && $('download-count-value')) $('download-count-value').textContent = total.toLocaleString();
+        if (ver) {
+            document.querySelectorAll('#download-btn-version, .download-btn-version, #download-version-value, .download-version-value').forEach(el => el.textContent = ver);
+        }
+        if (url && $('download-btn')) $('download-btn').href = url;
+    }
     
     if (cached && Date.now() - cached.ts < CACHE_TTL) {
-        if ($('download-count-value')) $('download-count-value').textContent = cached.total.toLocaleString();
-        if (cached.url && $('download-btn')) $('download-btn').href = cached.url;
+        const cachedVer = cached.version || (cached.changelog && cached.changelog[0] ? cached.changelog[0].version : '');
+        applyCachedOrData(cached.total, cachedVer, cached.url);
         if (cached.changelog) loadChangelog();
         return;
     }
@@ -202,7 +210,7 @@ async function updateGithubData() {
         if (!resp.ok) throw new Error('rate limited');
         const releases = await resp.json();
 
-        let total = 0, latestUrl = '', latestDate = '';
+        let total = 0, latestUrl = '', latestDate = '', latestVersion = '';
         const changelog = [];
 
         for (const r of releases) {
@@ -214,27 +222,32 @@ async function updateGithubData() {
                 }
             }
             const parsed = parseRelease(r.body);
+            const rVer = parsed ? parsed.version : (r.tag_name || '').replace(/^v/, '');
+            const rDate = parsed ? parsed.date : (r.published_at || r.created_at);
             if (parsed) {
                 changelog.push(parsed);
-                if (apkUrl && (!latestDate || new Date(parsed.date) > new Date(latestDate))) {
-                    latestDate = parsed.date;
-                    latestUrl = apkUrl;
-                }
+            }
+            if (apkUrl && (!latestDate || new Date(rDate) > new Date(latestDate))) {
+                latestDate = rDate;
+                latestUrl = apkUrl;
+                latestVersion = rVer;
             }
         }
         changelog.sort((a, b) => new Date(b.date) - new Date(a.date));
+        if (!latestVersion && changelog.length) {
+            latestVersion = changelog[0].version;
+        }
 
-        localStorage.setItem(CACHE_KEY, JSON.stringify({ total, url: latestUrl, changelog, ts: Date.now() }));
-        if ($('download-count-value')) $('download-count-value').textContent = total.toLocaleString();
-        if (latestUrl && $('download-btn')) $('download-btn').href = latestUrl;
+        localStorage.setItem(CACHE_KEY, JSON.stringify({ total, url: latestUrl, version: latestVersion, changelog, ts: Date.now() }));
+        applyCachedOrData(total, latestVersion, latestUrl);
         loadChangelog();
     } catch (e) {
         if (cached) {
             cached.ts = Date.now(); // Фикс лимита API: не долбим API при Rate Limit
             localStorage.setItem(CACHE_KEY, JSON.stringify(cached));
             
-            if ($('download-count-value')) $('download-count-value').textContent = cached.total.toLocaleString();
-            if (cached.url && $('download-btn')) $('download-btn').href = cached.url;
+            const cachedVer = cached.version || (cached.changelog && cached.changelog[0] ? cached.changelog[0].version : '');
+            applyCachedOrData(cached.total, cachedVer, cached.url);
             if (cached.changelog) loadChangelog();
         } else {
             if ($('download-count-value')) $('download-count-value').textContent = '—';
