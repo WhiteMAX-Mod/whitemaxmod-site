@@ -115,6 +115,10 @@ document.addEventListener('click', (e) => {
     // 1. Кнопка скачивания и Тост
     const btn = e.target.closest('#download-btn');
     if (btn) {
+        if (btn.classList.contains('disabled') || btn.getAttribute('aria-disabled') === 'true' || !btn.href || btn.getAttribute('href') === '#') {
+            e.preventDefault();
+            return;
+        }
         if (warningTimer) return;
         const dw = $('download-warning');
         if (dw) {
@@ -193,9 +197,20 @@ async function updateGithubData() {
     function applyCachedOrData(total, ver, url) {
         if (total && $('download-count-value')) $('download-count-value').textContent = total.toLocaleString();
         if (ver) {
-            document.querySelectorAll('#download-btn-version, .download-btn-version, #download-version-value, .download-version-value').forEach(el => el.textContent = ver);
+            document.querySelectorAll('#download-version-value, .download-version-value').forEach(el => el.textContent = ver);
         }
-        if (url && $('download-btn')) $('download-btn').href = url;
+        const btn = $('download-btn');
+        if (btn && url && ver) {
+            btn.classList.remove('disabled');
+            btn.removeAttribute('aria-disabled');
+            btn.href = url;
+            btn.setAttribute('download', '');
+            const isEn = typeof currentLang !== 'undefined' && currentLang === 'en';
+            btn.innerHTML = `
+                <span class="btn-text" data-ru="Скачать WhiteMAX" data-en="Download WhiteMAX">${isEn ? 'Download WhiteMAX' : 'Скачать WhiteMAX'}</span>
+                <span class="btn-version"><span data-ru="Версия" data-en="Version">${isEn ? 'Version' : 'Версия'}</span> <span id="download-btn-version" class="download-btn-version">${esc(ver)}</span></span>
+            `;
+        }
     }
     
     if (cached && Date.now() - cached.ts < CACHE_TTL) {
@@ -251,6 +266,11 @@ async function updateGithubData() {
             if (cached.changelog) loadChangelog();
         } else {
             if ($('download-count-value')) $('download-count-value').textContent = '—';
+            const btn = $('download-btn');
+            if (btn) {
+                const isEn = typeof currentLang !== 'undefined' && currentLang === 'en';
+                btn.innerHTML = `<span class="btn-text" data-ru="Недоступно" data-en="Unavailable">${isEn ? 'Unavailable' : 'Недоступно'}</span>`;
+            }
             loadChangelog();
         }
     }
